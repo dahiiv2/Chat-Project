@@ -28,6 +28,13 @@ export default function RootLayout({
           "bg-white text-slate-900 dark:bg-[#290007] dark:text-slate-50"
 
         )} suppressHydrationWarning>
+          <ThemeProvider 
+          attribute="class" 
+          defaultTheme="dark" 
+          enableSystem={false} 
+          storageKey="theme">
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
