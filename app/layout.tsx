@@ -25,7 +25,7 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <body className={cn(
           spaceGrotesk.variable, "antialiased",
-          "bg-white text-slate-900 dark:bg-[#290007] dark:text-slate-50"
+          "bg-white text-slate-900 dark:bg-[#1b1b1b] dark:text-slate-50"
 
         )} suppressHydrationWarning>
           <ThemeProvider 
