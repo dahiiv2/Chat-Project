@@ -9,7 +9,23 @@ export default {
   ],
   theme: {
   	extend: {
+      fontFamily: {
+        sans: ["Space Grotesk", "var(--font-sans)"],
+      },
   		colors: {
+        crimson: {
+          50: "#fdf2f4",
+          100: "#fce7eb",
+          200: "#f9d0d9",
+          300: "#f4a9b9",
+          400: "#ee7594",
+          500: "#e34a72",
+          600: "#d42a5b",
+          700: "#b31d47",
+          800: "#961b42",
+          900: "#811a3d",
+          950: "#48091d",
+        },
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

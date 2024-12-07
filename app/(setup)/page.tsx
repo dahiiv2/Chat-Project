@@ -1,3 +1,4 @@
+import { CreateServer } from "@/components/modals/create-server";
 import { db } from "@/lib/db";
 import { initialProfile } from "@/lib/initial-profile";
 import { redirect } from "next/navigation"
@@ -19,7 +20,7 @@ const SetupPage = async () => {
         return redirect(`/servers/${server.id}`);
     }
 
-    return <div>Create your Server</div>;
+    return <CreateServer />;
 }
  
 export default SetupPage; 
