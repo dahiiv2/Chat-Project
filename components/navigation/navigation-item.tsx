@@ -30,7 +30,7 @@ export const NavigationItem = ({
         >
             {/* The button that wraps the whole server icon */}
             <button
-                onClick={() => {}}
+                onClick={() => router.push(`/servers/${id}`)}
                 className="group relative flex items center"   // 'group' lets us style children on hover
             >
                 {/* This is the little indicator bar on the left */}
