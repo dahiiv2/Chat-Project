@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import * as zod from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
@@ -25,6 +26,7 @@ import {
     FormLabel,
     FormMessage
 } from "@/components/ui/form"
+import { useRouter } from "next/navigation";
 
 
 // Form validation schema
@@ -42,6 +44,9 @@ export const CreateServer = () => {
 
     //prevent Hydration error
     const [isMounted, setIsMounted] = React.useState(false);
+
+    const router = useRouter();
+
     useEffect(() => {
         setIsMounted(true);
     }, []);
@@ -61,7 +66,15 @@ export const CreateServer = () => {
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (values: zod.infer<typeof formSchema>) => {
-        console.log(values);
+        try {
+            await axios.post("/api/servers", values);
+
+            form.reset();
+            router.refresh();
+            window.location.reload();
+        } catch (error) {
+            console.error("Error submitting form:", error);
+        }
     }
 
     return (
@@ -79,7 +92,10 @@ export const CreateServer = () => {
                         </DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            form.handleSubmit(onSubmit)(e);
+                        }} className="space-y-8">
                             <div className="space-y-8 px-6">
                                 <div className="flex items-center justify-center text-center">
                                     <FormField
@@ -94,6 +110,7 @@ export const CreateServer = () => {
                                                     onChange={field.onChange}
                                                 />
                                             </FormControl>
+                                            <FormMessage />
                                           </FormItem>  
                                         )}
                                     />
