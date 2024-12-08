@@ -6,6 +6,8 @@ import { NavigationAction } from "./navigation-action";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { NavigationItem } from "./navigation-item";
+import { ModeToggle } from "@/components/mode-toggle";
+import { UserButton } from "@clerk/nextjs";
 
 export const NavigationSidebar = async () => {
     //Grab profile
@@ -28,7 +30,7 @@ export const NavigationSidebar = async () => {
 
     return(
         <div className="space-y-4 flex flex-col items-center h-full text-primary 
-        w-full bg-[#2D2329] dark:bg-[#231B20] py-3 shadow-[2px_0_4px_rgba(0,0,0,0.2)]">
+        w-full bg-[#f2f2f2] dark:bg-[#1b1b1b] py-3 shadow-[2px_0_4px_rgba(0,0,0,0.2)]">
             <NavigationAction />
             <Separator 
                 className="h-[2px] bg-zinc-300 dark:bg-zinc-700
@@ -45,6 +47,17 @@ export const NavigationSidebar = async () => {
                     </div>
                 ))}
             </ScrollArea>
+            <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
+                <ModeToggle />
+                <UserButton
+                    afterSignOutUrl="/"
+                    appearance={{
+                        elements: {
+                            avatarBox: "h-[48px] w-[48px]"
+                        }
+                    }}
+                />
+            </div>
         </div>
     )
 }
