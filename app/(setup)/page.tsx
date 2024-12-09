@@ -1,4 +1,4 @@
-import { CreateServer } from "@/components/modals/create-server";
+import { CreateServerModal } from "@/components/modals/create-server-modal";
 import { db } from "@/lib/db";
 import { initialProfile } from "@/lib/initial-profile";
 import { redirect } from "next/navigation"
@@ -20,7 +20,7 @@ const SetupPage = async () => {
         return redirect(`/servers/${server.id}`);
     }
 
-    return <CreateServer />;
+    return <CreateServerModal />;
 }
  
-export default SetupPage; 
+export default SetupPage;

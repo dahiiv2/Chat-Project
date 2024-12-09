@@ -1,34 +1,58 @@
 "use client";
+
 import Image from "next/image";
-
-import { UploadDropzone } from "@/lib/uploadthing";
-
-import "@uploadthing/react/styles.css"
 import { X } from "lucide-react";
+import { UploadCloud } from "lucide-react";
+import { useState, useRef } from "react";
+import axios from "axios";
 
-// Defines what props the component accepts
 interface FileUploadProps {
     onChange: (url?: string) => void;
     value: string;
     endpoint: "messageFile" | "serverImage"
 }
 
-// File upload component
 export const FileUpload = ({
     onChange,
     value,
     endpoint
 }: FileUploadProps) => {
-    // Get the file extension from the URL (e.g., "image.jpg" -> "jpg")
+    const [isUploading, setIsUploading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const fileType = value?.split(".").pop();
 
-    // If we already have an uploaded file and it's not a PDF
+    const handleUpload = async (file: File) => {
+        try {
+            setIsUploading(true);
+            setError(null);
+            
+            const formData = new FormData();
+            formData.append("file", file);
+            
+            const response = await axios.post("/api/upload", formData);
+            onChange(response.data.url);
+        } catch (error: any) {
+            console.error("Upload error:", error);
+            setError(error.response?.data || "Upload failed");
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            handleUpload(file);
+        }
+    };
+
     if (value && fileType !== "pdf") {
         return (
             <div className="relative h-20 w-20">
                 <Image
-                    fill    // Make the image fill the container
-                    src={value} // URL of the uploaded file
+                    fill
+                    src={value}
                     alt="Upload"
                     className="rounded-full"    
                 />
@@ -37,21 +61,37 @@ export const FileUpload = ({
                     className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 shadow-sm"
                     type="button"
                 >
-                    <X className ="h-4 w-4"/>
+                    <X className="h-4 w-4"/>
                 </button>
             </div>
         )
     }
 
     return (
-        <UploadDropzone
-            endpoint={endpoint}  // Uploadthing endpoint
-            onClientUploadComplete={(res) => { // Uploadthing callback
-                onChange(res?.[0].url);
-            }}
-            onUploadError={(error: Error) => { // Uploadthing error callback
-                console.log(error);
-            }}
-        />
+        <div className="flex flex-col items-center justify-center">
+            <input 
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                className="hidden"
+                accept="image/*"
+            />
+            <button
+                onClick={() => fileInputRef.current?.click()}
+                className={`p-4 border-2 border-dashed rounded-lg ${isUploading ? 'opacity-50' : 'hover:bg-gray-50'}`}
+                type="button"
+                disabled={isUploading}
+            >
+                <UploadCloud className="h-10 w-10 text-zinc-500" />
+                <p className="mt-2 text-sm text-zinc-500">
+                    {isUploading ? 'Uploading...' : 'Upload an image'}
+                </p>
+            </button>
+            {error && (
+                <p className="mt-2 text-sm text-red-500">
+                    {error}
+                </p>
+            )}
+        </div>
     )
 }

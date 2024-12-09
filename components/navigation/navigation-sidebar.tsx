@@ -10,13 +10,18 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { UserButton } from "@clerk/nextjs";
 
 export const NavigationSidebar = async () => {
+    console.log("NavigationSidebar rendering");
+    
     //Grab profile
     const profile = await currentProfile();
 
     //If no profile, redirect to sign in
     if (!profile) {
+        console.log("No profile, redirecting");
         return redirect("/");
     }
+
+    console.log("Profile found, fetching servers");
 
     const servers = await db.server.findMany({
         where: {
@@ -27,6 +32,8 @@ export const NavigationSidebar = async () => {
             }
         }
     })
+
+    console.log("Servers found:", servers.length);
 
     return(
         <div className="space-y-4 flex flex-col items-center h-full text-primary 
