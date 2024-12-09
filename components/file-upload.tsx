@@ -4,7 +4,7 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import { UploadCloud } from "lucide-react";
 import { useState, useRef } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 interface FileUploadProps {
     onChange: (url?: string) => void;
@@ -15,8 +15,7 @@ interface FileUploadProps {
 export const FileUpload = ({
     onChange,
     value,
-    endpoint
-}: FileUploadProps) => {
+}: Omit<FileUploadProps, "endpoint">) => {
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,9 +31,10 @@ export const FileUpload = ({
             
             const response = await axios.post("/api/upload", formData);
             onChange(response.data.url);
-        } catch (error: any) {
+        } catch (error) {
             console.error("Upload error:", error);
-            setError(error.response?.data || "Upload failed");
+            const axiosError = error as AxiosError;
+            setError(axiosError.response?.data as string || "Upload failed");
         } finally {
             setIsUploading(false);
         }
