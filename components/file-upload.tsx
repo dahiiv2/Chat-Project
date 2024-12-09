@@ -9,13 +9,12 @@ import axios, { AxiosError } from "axios";
 interface FileUploadProps {
     onChange: (url?: string) => void;
     value: string;
-    endpoint: "messageFile" | "serverImage"
 }
 
 export const FileUpload = ({
     onChange,
     value,
-}: Omit<FileUploadProps, "endpoint">) => {
+}: FileUploadProps) => {
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
