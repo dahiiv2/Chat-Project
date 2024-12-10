@@ -1,18 +1,17 @@
 import { redirect } from "next/navigation";
 import { ServerSidebar } from "@/components/server/server-sidebar";
-
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 
-interface LayoutProps {
+type LayoutProps = {
     children: React.ReactNode;
-    params: { serverId: string }
+    params: { serverId: string };
 }
 
-const ServerIdLayout = async ({
+export default async function ServerIdLayout({
     children,
-    params,
-}: LayoutProps) => {
+    params
+}: LayoutProps) {
     const profile = await currentProfile();
 
     if (!profile) {
@@ -47,5 +46,3 @@ const ServerIdLayout = async ({
         </div>
      );
 }
- 
-export default ServerIdLayout;
