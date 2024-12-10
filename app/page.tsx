@@ -1,9 +1,9 @@
-import { InitialModal } from "@/components/modals/initial-modal";
-import { db } from "@/lib/db";
-import { initialProfile } from "@/lib/initial-profile";
-import { redirect } from "next/navigation"
+import { redirect } from "next/navigation";
 
-const SetupPage = async () => {
+import { initialProfile } from "@/lib/initial-profile";
+import { db } from "@/lib/db";
+
+export default async function Page() {
     const profile = await initialProfile();
 
     const server = await db.server.findFirst({
@@ -20,7 +20,5 @@ const SetupPage = async () => {
         return redirect(`/servers/${server.id}`);
     }
 
-    return <InitialModal />;
+    return redirect("/setup");
 }
-
-export default SetupPage;
