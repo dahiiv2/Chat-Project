@@ -16,20 +16,20 @@ export const ModalWrapper = ({
                 style={{
                     background: `
                         linear-gradient(135deg,
-                            rgba(75, 35, 35, 0.97),
-                            rgba(120, 45, 45, 0.95)
+                            rgba(184, 134, 11, 0.97),
+                            rgba(218, 165, 32, 0.95)
                         ),
                         repeating-linear-gradient(
                             45deg,
-                            rgba(42, 21, 21, 0.15) 0px,
-                            rgba(42, 21, 21, 0.15) 1px,
+                            rgba(218, 165, 32, 0.15) 0px,
+                            rgba(218, 165, 32, 0.15) 1px,
                             transparent 1px,
                             transparent 20px
                         ),
                         repeating-linear-gradient(
                             -45deg,
-                            rgba(42, 21, 21, 0.15) 0px,
-                            rgba(42, 21, 21, 0.15) 1px,
+                            rgba(184, 134, 11, 0.15) 0px,
+                            rgba(184, 134, 11, 0.15) 1px,
                             transparent 1px,
                             transparent 20px
                         )`,
