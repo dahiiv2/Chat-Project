@@ -71,13 +71,14 @@ export const InitialModal = () => {
 
     return (
         <Dialog open>
-            <DialogContent className="bg-white text-black p-0 overflow-hidden">
+            <DialogContent className="bg-white dark:bg-[#313338] p-0 overflow-hidden">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center font-bold">
-                        Customize your server
+                        Create Your First Server
                     </DialogTitle>
-                    <DialogDescription className="text-center text-zinc-500">
-                        Give your server a personality with a name and an image. You can always change it later.
+                    <DialogDescription className="text-center text-zinc-500 dark:text-zinc-400">
+                        Pick an image and a name to get started
+                        Reminder: You can change them later.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -107,14 +108,14 @@ export const InitialModal = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel
-                                            className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70"
+                                            className="uppercase text-xs font-bold text-zinc-500 dark:text-zinc-300"
                                         >
                                             Server name
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 disabled={isLoading}
-                                                className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                                                className="bg-zinc-100 dark:bg-zinc-900 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-400"
                                                 placeholder="Enter server name"
                                                 {...field}
                                             />
@@ -124,8 +125,11 @@ export const InitialModal = () => {
                                 )}
                             />
                         </div>
-                        <DialogFooter className="bg-gray-100 px-6 py-4">
-                            <Button variant="primary" disabled={isLoading}>
+                        <DialogFooter className="bg-gray-100 dark:bg-[#2B2D31] px-6 py-4">
+                            <Button 
+                                disabled={isLoading}
+                                className="bg-amber-500 hover:bg-amber-600 text-white"
+                            >
                                 Create
                             </Button>
                         </DialogFooter>
