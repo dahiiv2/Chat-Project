@@ -4,13 +4,15 @@ import { ServerSidebar } from "@/components/server/server-sidebar";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 
+interface LayoutProps {
+    children: React.ReactNode;
+    params: { serverId: string }
+}
+
 const ServerIdLayout = async ({
     children,
     params,
-}: {
-    children: React.ReactNode;
-    params: { serverId: string }
-}) => {
+}: LayoutProps) => {
     const profile = await currentProfile();
 
     if (!profile) {
