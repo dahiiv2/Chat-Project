@@ -58,7 +58,7 @@ export const InviteModal = () => {
                     <DialogTitle className="text-2xl text-center font-bold">
                         Create an invite link
                     </DialogTitle>
-                    <DialogDescription className="text-center text-zinc-500 dark:text-zinc-400">
+                    <DialogDescription className="text-center text-amber-500">
                         This is your sharable invite link, be careful who you give it to!
                     </DialogDescription>
                 </DialogHeader>

@@ -92,9 +92,8 @@ export const EditServerModal = () => {
                     <DialogTitle className="text-2xl text-center font-bold">
                         Edit {server?.name}
                     </DialogTitle>
-                    <DialogDescription className="text-center text-zinc-500 dark:text-zinc-400">
-                        Pick an image and a name for your server
-                        Reminder: You can change them later.
+                    <DialogDescription className="text-center text-amber-500">
+                        Pick an image and a name for your server.
                     </DialogDescription>
                 </DialogHeader>
                 {/* Use key prop to force re-render of form when server changes */}
