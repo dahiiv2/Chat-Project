@@ -6,11 +6,13 @@ import { redirect } from "next/navigation";
 interface InviteCodePageProps {
     params: {
         inviteCode: string;
-    }
+    };
+    searchParams: { [key: string]: string | string[] | undefined };
 }
 
 const InviteCodePage = async ({
-    params
+    params,
+    searchParams
 }: InviteCodePageProps) => {
     const profile = await currentProfile();
 
