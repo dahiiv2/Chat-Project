@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Discord-Like Chat Application
 
-## Getting Started
+A real-time chat application with server management, channels, and direct messaging functionality built with Next.js 15.0.4, Tailwind CSS, and Prisma.
 
-First, run the development server:
+## Academic Project
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This application is the final project for DAW (Web Application Development, 2nd year).
+
+**Student:** Daniel Mellera  
+**Program:** Development of Web Applications (DAW)  
+**Year:** 2nd
+
+## Project Objectives
+
+Develop a Discord-inspired communication platform with text, audio, and video channels, aimed at companies requiring a hierarchical communication system to facilitate real-time interaction between teams and departments, optimizing coordination.
+
+## Project Features
+
+- **Real-time interaction:** Users can communicate through text messages, voice calls, and video conferences.
+- **Structured organization:** The system includes channels organized by topics or departments, allowing the creation of private and public spaces.
+- **Role and permission management:** Implements a robust system of roles and permissions to control access to different areas of the platform.
+- **Content management:** Users can share and organize images and other multimedia files.
+- **Security controls:** Security measures such as user authentication, data encryption, etc. are implemented.
+- **Scalability:** The platform is designed to support a large volume of concurrent users and activities.
+
+## Project Scope
+
+- **Frontend:** Next.js, React, Tailwind CSS, TypeScript.
+- **Backend:** Node.js (integrated in Next.js) for business logic and request management.
+- **Database:** MySQL, managed through Prisma to facilitate object-relational mapping, hosted by Railway.
+- **Other tools:** UploadThing, Clerk.
+
+## Implemented Features
+
+- **Authentication** using Clerk
+- **Server Management**:
+  - Create and customize servers
+  - Edit server details (name, image)
+  - Manage server members (change roles, kick members)
+  - Generate invite codes
+- **Real-time Messaging**:
+  - Channel-based communication
+  - Direct messages between users
+  - Message attachments
+- **Modern UI**:
+  - Responsive design
+  - Dark/light mode
+  - Beautiful animations and transitions
+
+## Tech Stack
+
+- **Framework**: Next.js 15.0.4
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: Clerk
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **State Management**: Zustand
+- **File Uploads**: UploadThing
+- **Form Handling**: react-hook-form with Zod validation
+
+## Environment Variables
+
+Required environment variables:
+
+```
+# Database
+DATABASE_URL=your_database_url
+
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+
+# UploadThing
+UPLOADTHING_SECRET=your_uploadthing_secret
+UPLOADTHING_APP_ID=your_uploadthing_app_id
+UPLOADTHING_TOKEN=your_uploadthing_token
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## TypeScript Notes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project is built with Next.js 15.0.4 which has different typing requirements than earlier versions. Some API routes use the `any` type for parameters to ensure compatibility.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application is deployed to Vercel with continuous integration from GitHub.
