@@ -76,7 +76,7 @@ export const CreateServerModal = () => {
                         Create a Server
                     </DialogTitle>
                     <DialogDescription className="text-center text-zinc-500 dark:text-zinc-400">
-                        Pick an image and a name for your server
+                        Pick an image and a name for your server!
                         Reminder: You can change them later.
                     </DialogDescription>
                 </DialogHeader>
