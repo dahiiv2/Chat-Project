@@ -28,6 +28,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { FileUpload } from "@/components/file-upload";
 import { useEffect } from "react";
 
+// schema for form validation
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Server name is required."
@@ -38,12 +39,15 @@ const formSchema = z.object({
 });
 
 export const EditServerModal = () => {
+    // get modal state from global store
     const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
 
+    // only show modal when type matches
     const isModalOpen = isOpen && type === "editServer";
     const { server } = data;
 
+    // initialize form with zod validation
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -52,18 +56,21 @@ export const EditServerModal = () => {
         }
     });
 
+    // Properly load server data into form fields only when server changes
     useEffect(() => {
         if (server) {
             form.setValue("name", server.name);
             form.setValue("imageUrl", server.imageUrl);
         }
-    }, [server, form]);
+    }, [server?.id]);
 
     const isLoading = form.formState.isSubmitting;
 
+    // handle form submission by sending patch request to api
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             await axios.patch(`/api/servers/${server?.id}`, values);
+            
             form.reset();
             router.refresh();
             onClose();
@@ -72,6 +79,7 @@ export const EditServerModal = () => {
         }
     }
 
+    // reset form on close
     const handleClose = () => {
         form.reset();
         onClose();
@@ -89,10 +97,12 @@ export const EditServerModal = () => {
                         Reminder: You can change them later.
                     </DialogDescription>
                 </DialogHeader>
-                <Form {...form}>
+                {/* Use key prop to force re-render of form when server changes */}
+                <Form {...form} key={server?.id || "new"}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                         <div className="space-y-8 px-6">
                             <div className="flex items-center justify-center text-center">
+                                {/* file upload component handles image selection */}
                                 <FormField
                                     control={form.control}
                                     name="imageUrl"
@@ -110,6 +120,7 @@ export const EditServerModal = () => {
                                 />
                             </div>
 
+                            {/* server name input field */}
                             <FormField
                                 control={form.control}
                                 name="name"
