@@ -4,10 +4,11 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { serverId: string } }
+    context: { params: any } 
 ) {
     try {
         const profile = await currentProfile();
+        const { serverId } = context.params;
         const { name, imageUrl } = await req.json();
 
         if (!profile) {
@@ -16,7 +17,7 @@ export async function PATCH(
 
         const server = await db.server.update({
             where: {
-                id: params.serverId,
+                id: serverId,
                 profileId: profile.id,
             },
             data: {

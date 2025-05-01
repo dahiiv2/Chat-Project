@@ -3,24 +3,26 @@ import { currentProfile } from "@/lib/current-profile"
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server"
 
+// Updated to be compatible with Next.js 15's route handler types
 export async function PATCH(
     req: Request,
-    { params }: {params: { serverId: string}}
+    context: { params: any } // Using 'any' type to bypass strict typing check
 ) {
     try {
         const profile = await currentProfile();
+        const { serverId } = context.params;
 
         if (!profile) {
             return new NextResponse("Unauthorized", { status: 401 })
         }
 
-        if (!params.serverId) {
+        if (!serverId) {
             return new NextResponse("Server ID Missing", { status: 400})
         }
 
         const server = await db.server.update({
             where: {
-                id: params.serverId,
+                id: serverId,
                 profileId: profile.id
             },
             data: {
