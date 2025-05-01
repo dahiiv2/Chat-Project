@@ -3,31 +3,27 @@ import { db } from "@/lib/db";
 import { RedirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-interface InviteCodePageProps {
-    params: {
-        inviteCode: string;
-    };
-    searchParams: { [key: string]: string | string[] | undefined };
-}
-
-const InviteCodePage = async ({
-    params,
-    searchParams
-}: InviteCodePageProps) => {
+// Add explicit typing for params to fix TypeScript error
+const InviteCodePage = async ({ 
+  params 
+}: { 
+  params: { inviteCode: string } 
+}) => {
     const profile = await currentProfile();
+    const { inviteCode } = params;
 
     //Fetch profile
     if (!profile) {
         return <RedirectToSignIn />;
     }
 
-    if (!params.inviteCode) {
+    if (!inviteCode) {
         return redirect("/");
     }
 
     const existingServer = await db.server.findFirst({
         where: {
-            inviteCode: params.inviteCode,
+            inviteCode,
             members: {
                 some: {
                     profileId: profile.id,
@@ -42,7 +38,7 @@ const InviteCodePage = async ({
 
     const server = await db.server.update({
         where: {
-            inviteCode: params.inviteCode,
+            inviteCode,
         },
         data: {
             members: {
@@ -54,8 +50,6 @@ const InviteCodePage = async ({
             }
         }
     });
-
-    
 
     if (server) {
         return redirect(`/servers/${server.id}`)
