@@ -27,6 +27,8 @@ interface ServerSectionProps {
 export const ServerSection = ({ data, role, server, channelType }: ServerSectionProps) => {
     const { onOpen } = useModal();
 
+
+
     return (
         <div className="space-y-4 mt-2">
             {data.map((item) => (
@@ -79,11 +81,20 @@ export const ServerSection = ({ data, role, server, channelType }: ServerSection
                                     <div className="ml-auto flex items-center gap-x-2">
                                         <ActionTooltip label="Edit">
                                             <Edit 
+                                                onClick={() => onOpen("editChannel", { 
+                                                    server,
+                                                    channel: data,
+                                                    channelType
+                                                })}
                                                 className="hidden group-hover:block h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
                                             />
                                         </ActionTooltip>
                                         <ActionTooltip label="Delete">
                                             <Trash 
+                                                onClick={() => onOpen("deleteChannel", { 
+                                                    server,
+                                                    channel: data // Use the current data item as the channel
+                                                })}
                                                 className="hidden group-hover:block h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
                                             />
                                         </ActionTooltip>
