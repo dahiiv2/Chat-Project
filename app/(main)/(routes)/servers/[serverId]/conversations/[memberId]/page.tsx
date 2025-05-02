@@ -3,6 +3,7 @@ import { RedirectToSignIn } from "@clerk/nextjs";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { ChatHeader } from "@/components/chat/chat-header";
+import { getOrCreateConversation } from "@/lib/conversation";
 
 // Using any type for params to avoid TypeScript issues in Next.js 15
 interface MemberIDPageProps {
@@ -28,41 +29,54 @@ const MemberIDPage = async ({
         }
     });
 
-    const conversation = await db.member.findFirst({
-        where: {
-            serverId: params.serverId,
-            id: params.memberId,
-        },
-        include: {
-            profile: true,
-        }
-    });
-
-    if (!currentMember || !conversation) {
+    if (!currentMember) {
         return redirect("/");
     }
 
+    const conversation = await getOrCreateConversation(currentMember.id, params.memberId);
+
+    if (!conversation) {
+        return redirect("/");
+    }
+
+    const { memberOne, memberTwo } = conversation;
+    
     // Check if the user is messaging themselves
-    const isSelfConversation = currentMember.profileId === conversation.profileId;
+    const otherMember = memberOne.profileId === profile.id 
+        ? memberTwo 
+        : memberOne;
+    
+    const isSelfConversation = profile.id === otherMember.profileId;
     
     // Display name - use "Personal Notes" for self-conversations
-    const displayName = isSelfConversation ? "Personal Notes" : conversation.profile.name;
+    const displayName = isSelfConversation 
+        ? "Personal Notes" 
+        : otherMember.profile.name;
 
     return ( 
         <div className="bg-white dark:bg-[#1E1F22] h-full flex flex-col">
+            {/* Enhanced header with darker background and shadow */}
+            <div className="bg-zinc-100 dark:bg-[#2B2D31] border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
+                <div className="p-4">
+                    <ChatHeader
+                        imageUrl={isSelfConversation 
+                            ? profile.imageUrl 
+                            : otherMember.profile.imageUrl}
+                        name={displayName}
+                        serverId={params.serverId}
+                        type="conversation"
+                    />
+                </div>
+            </div>
+            
+            {/* Content area */}
             <div className="flex-1 flex flex-col overflow-y-auto">
                 <div className="flex-1 relative">
                     <div className="p-4">
-                        <ChatHeader 
-                            name={displayName}
-                            serverId={params.serverId}
-                            type="conversation"
-                            imageUrl={conversation.profile.imageUrl}
-                        />
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
                             {isSelfConversation ? 
-                                "This is your personal notepad. Jot down ideas, reminders, or anything you want to remember." :
-                                `This is the beginning of your conversation with ${conversation.profile.name}`
+                                "This is your personal channel! You can write whatever you want here." :
+                                `This is the beginning of your conversation with ${otherMember.profile.name}`
                             }
                         </p>
                     </div>
