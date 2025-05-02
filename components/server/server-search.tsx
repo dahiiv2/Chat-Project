@@ -48,6 +48,8 @@ export const ServerSearch = ({data}: ServerSearchProps) => {
 
     const onClick = ({ id, type }: { id: string; type: "channel" | "member" }) => {
         setOpen(false);
+        if (!params || !params.serverId) return;
+        
         if (type === "channel") {
             router.push(`/servers/${params.serverId}/channels/${id}`);
         } else {
