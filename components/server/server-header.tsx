@@ -6,6 +6,7 @@ import { ChevronDown, LogOut, PlusCircle, Settings, Trash, UserPlus, Users } fro
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useModal } from "@/hooks/use-modal-store";
+import { useState } from "react";
 
 interface ServerHeaderProps {
     server: ServerWithmembersWithProfiles
@@ -17,13 +18,18 @@ export const ServerHeader = ({
     role
 }: ServerHeaderProps) => {
     const { onOpen } = useModal();
+    const [open, setOpen] = useState(false);
     
     const isAdmin = role === MemberRole.ADMIN;
     const isModerator = isAdmin || role === MemberRole.MODERATOR;
 
+    const handleAction = (action: () => void) => {
+        action();
+        setOpen(false);
+    };
 
     return (
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger
                 className="focus:outline-none"
                 asChild
@@ -44,7 +50,7 @@ export const ServerHeader = ({
             >
                 {isModerator && (
                     <DropdownMenuItem
-                        onClick={() => onOpen("invite", { server })}
+                        onClick={() => handleAction(() => onOpen("invite", { server }))}
                         className="px-3 py-2 text-amber-600 dark:text-amber-400 hover:bg-amber-100/50
                         dark:hover:bg-amber-500/10 cursor-pointer transition"
                     >
@@ -54,7 +60,7 @@ export const ServerHeader = ({
                 )}
                 {isAdmin && (
                     <DropdownMenuItem
-                        onClick={() => onOpen("editServer", {server})}
+                        onClick={() => handleAction(() => onOpen("editServer", {server}))}
                         className="px-3 py-2 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100
                         dark:hover:bg-zinc-700/50 cursor-pointer transition"
                     >
@@ -64,7 +70,7 @@ export const ServerHeader = ({
                 )}
                 {isAdmin && (
                     <DropdownMenuItem
-                        onClick={() => onOpen("members", { server })}
+                        onClick={() => handleAction(() => onOpen("members", { server }))}
                         className="px-3 py-2 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100
                         dark:hover:bg-zinc-700/50 cursor-pointer transition"
                     >
@@ -74,7 +80,7 @@ export const ServerHeader = ({
                 )}
                 {isModerator && (
                     <DropdownMenuItem
-                        onClick={() => onOpen("createChannel")}
+                        onClick={() => handleAction(() => onOpen("createChannel", { server }))}
                         className="px-3 py-2 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100
                         dark:hover:bg-zinc-700/50 cursor-pointer transition"
                     >
@@ -87,7 +93,7 @@ export const ServerHeader = ({
                 )}
                 {isAdmin && (
                     <DropdownMenuItem
-                        onClick={() => onOpen("deleteServer", { server })}
+                        onClick={() => handleAction(() => onOpen("deleteServer", { server }))}
                         className="text-rose-500 dark:text-rose-400 px-3 py-2 hover:bg-rose-100/50
                         dark:hover:bg-rose-500/10 cursor-pointer transition"
                     >
@@ -97,7 +103,7 @@ export const ServerHeader = ({
                 )}
                 {!isAdmin && (
                     <DropdownMenuItem
-                        onClick={() => onOpen("leaveServer", { server })}
+                        onClick={() => handleAction(() => onOpen("leaveServer", { server }))}
                         className="text-rose-500 dark:text-rose-400 px-3 py-2 hover:bg-rose-100/50
                         dark:hover:bg-rose-500/10 cursor-pointer transition"
                     >

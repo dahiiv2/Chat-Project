@@ -1,12 +1,30 @@
-//import { ChannelType } from "@prisma/client";
+import { ChannelType } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { MemberRole } from "@prisma/client";
+
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ServerHeader } from "./server-header";
+import { ServerSearch } from "./server-search";
+
+import { Hash, Music, Film, UserPlus, ShieldCheck, ShieldAlert } from "lucide-react";
 
 interface ServerSidebarProps {
     serverId: string;
+}
+
+const iconMap = {
+    [ChannelType.TEXT]: <Hash className="h-4 w-4"/>,
+    [ChannelType.AUDIO]: <Music className="h-4 w-4"/>,
+    [ChannelType.VIDEO]: <Film className="h-4 w-4"/>
+}
+
+const roleIconMap = {
+    [MemberRole.ADMIN]: <ShieldCheck className="h-4 w-4"/>,
+    [MemberRole.MODERATOR]: <ShieldAlert className="h-4 w-4"/>,
+    [MemberRole.USER]: <UserPlus className="h-4 w-4"/>
 }
 
 export const ServerSidebar = async ({
@@ -39,10 +57,10 @@ export const ServerSidebar = async ({
         }
     });
 
-    // const textChannels = server?.channels.filter((channel) => channel.type === ChannelType.TEXT)
-    // const audioChannels = server?.channels.filter((channel) => channel.type === ChannelType.AUDIO)
-    // const videoChannels = server?.channels.filter((channel) => channel.type === ChannelType.VIDEO)
-    // const members = server?.members.filter((member) => member.profileId !== profile.id)
+    const textChannels = server?.channels.filter((channel) => channel.type === ChannelType.TEXT)
+    const audioChannels = server?.channels.filter((channel) => channel.type === ChannelType.AUDIO)
+    const videoChannels = server?.channels.filter((channel) => channel.type === ChannelType.VIDEO)
+    const members = server?.members.filter((member) => member.profileId !== profile.id)
 
     if (!server) {
         return redirect("/");
@@ -59,6 +77,50 @@ export const ServerSidebar = async ({
                 server={server}
                 role={role}
             />
+            <ScrollArea className="px-3 h-full">
+                <div className="space-y-2">
+                    <ServerSearch data={
+                        [
+                            {
+                                label: "Text",
+                                type: "channel",
+                                data: textChannels?.map((channel) => ({
+                                    id: channel.id,
+                                    name: channel.name,
+                                    icon: iconMap[channel.type]
+                                }))
+                            },
+                            {
+                                label: "Voice",
+                                type: "channel",
+                                data: audioChannels?.map((channel) => ({
+                                    id: channel.id,
+                                    name: channel.name,
+                                    icon: iconMap[channel.type]
+                                }))
+                            },
+                            {
+                                label: "Video",
+                                type: "channel",
+                                data: videoChannels?.map((channel) => ({
+                                    id: channel.id,
+                                    name: channel.name,
+                                    icon: iconMap[channel.type]
+                                }))
+                            },
+                            {
+                                label: "Members",
+                                type: "member",
+                                data: members?.map((member) => ({
+                                    id: member.id,
+                                    name: member.profile.name,
+                                    icon: roleIconMap[member.role]
+                                }))
+                            }
+                        ]
+                    } />
+                </div>
+            </ScrollArea>
         </div>
     )
 }
