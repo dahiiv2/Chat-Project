@@ -5,6 +5,8 @@ import { Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { cn } from '@/lib/utils'
 import { ModalProvider } from '@/components/providers/modal-provider'
+import { SocketProvider } from '@/components/providers/socket-provider'
+import { SocketIndicator } from '@/components/socket-indicator'
 
 const font = Space_Grotesk({ subsets: ['latin'] })
 
@@ -31,8 +33,13 @@ export default function RootLayout({
             enableSystem={false}
             storageKey="discord-theme"
           >
-            <ModalProvider />
-            {children}
+            <SocketProvider>
+              <ModalProvider />
+              {children}
+              <div className="fixed bottom-1.5 right-4 z-50">
+                <SocketIndicator />
+              </div>
+            </SocketProvider>
           </ThemeProvider>
         </body>
       </html>

@@ -1,6 +1,7 @@
 import { Hash, Video, Mic } from "lucide-react";
 import { ChannelType } from "@prisma/client";
 import { MobileToggle } from "@/components/mobile-toggle";
+import { SocketIndicator } from "@/components/socket-indicator";
 
 interface ChatHeaderProps {
     name: string;
@@ -58,6 +59,7 @@ export const ChatHeader = ({
                     {/* On desktop: spans the full width */}
                     <div className="hidden md:block absolute left-0 right-0 h-full bg-gradient-to-r from-amber-400 to-amber-600 dark:from-amber-500 dark:to-amber-700 shadow-[0_0_15px_0_rgba(251,191,36,0.7)] dark:shadow-[0_0_10px_0_rgba(217,119,6,0.7)]" />
                 </div>
+
             </div>
             
             {/* Content with channel info */}

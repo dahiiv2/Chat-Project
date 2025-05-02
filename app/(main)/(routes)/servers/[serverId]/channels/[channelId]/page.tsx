@@ -3,6 +3,7 @@ import { RedirectToSignIn } from "@clerk/nextjs";
 import { db } from "@/lib/db";  
 import { redirect } from "next/navigation";
 import { ChatHeader } from "@/components/chat/chat-header";
+import { ChatInput } from "@/components/chat/chat-input";
 
 // Using any type for params to avoid TypeScript issues in Next.js 15
 interface ChannelIDPageProps {
@@ -39,7 +40,7 @@ const ChannelIDPage = async ({
     }
 
     return ( 
-        <div className="bg-white dark:bg-[#1E1F22] h-full flex flex-col">
+        <div className="bg-white dark:bg-[#1E1F22] flex flex-col h-full">
             {/* Enhanced header with darker background and shadow - matching conversation page */}
             <div className="bg-zinc-100 dark:bg-[#2B2D31] border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
                 <div className="p-4">
@@ -52,17 +53,29 @@ const ChannelIDPage = async ({
                 </div>
             </div>
             
-            {/* Content area */}
-            <div className="flex-1 flex flex-col overflow-y-auto">
-                <div className="flex-1 relative">
-                    <div className="p-4">
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                            Welcome to the beginning of the #{channel.name} channel
-                        </p>
-                    </div>
+            {/* Messages area - flex-1 to expand and take available space */}
+            <div className="flex-1 overflow-y-auto">
+                <div className="p-4">
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                        Welcome to the beginning of the #{channel.name} channel
+                    </p>
                 </div>
             </div>
+            
+            {/* Chat input fixed at the bottom */}
+            <div className="mt-auto pb-6 px-4">
+                <ChatInput 
+                    name={channel.name}
+                    type="channel"
+                    apiUrl="/api/socket/messages"
+                    query={{
+                        channelId: channel.id,
+                        serverId: channel.serverId
+                    }}
+                />
+            </div>
         </div>
+        
      );
 }
  
