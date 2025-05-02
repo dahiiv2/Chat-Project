@@ -10,6 +10,8 @@ This application is the final project for DAW (Web Application Development, 2nd 
 **Program:** Development of Web Applications (DAW)  
 **Year:** 2nd
 
+**Deployed at:** https://dahii.es/
+
 ## Project Objectives
 
 Develop a Discord-inspired communication platform with text, audio, and video channels, aimed at companies requiring a hierarchical communication system to facilitate real-time interaction between teams and departments, optimizing coordination.
