@@ -74,6 +74,7 @@ export const ServerHeader = ({
                 )}
                 {isModerator && (
                     <DropdownMenuItem
+                        onClick={() => onOpen("createChannel")}
                         className="px-3 py-2 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100
                         dark:hover:bg-zinc-700/50 cursor-pointer transition"
                     >
@@ -86,6 +87,7 @@ export const ServerHeader = ({
                 )}
                 {isAdmin && (
                     <DropdownMenuItem
+                        onClick={() => onOpen("deleteServer", { server })}
                         className="text-rose-500 dark:text-rose-400 px-3 py-2 hover:bg-rose-100/50
                         dark:hover:bg-rose-500/10 cursor-pointer transition"
                     >
@@ -95,6 +97,7 @@ export const ServerHeader = ({
                 )}
                 {!isAdmin && (
                     <DropdownMenuItem
+                        onClick={() => onOpen("leaveServer", { server })}
                         className="text-rose-500 dark:text-rose-400 px-3 py-2 hover:bg-rose-100/50
                         dark:hover:bg-rose-500/10 cursor-pointer transition"
                     >
