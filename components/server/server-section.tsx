@@ -7,6 +7,9 @@ import { Plus, Settings, Edit, Trash } from "lucide-react";
 import { MemberRole, Server, ChannelType } from "@prisma/client";
 import { useModal } from "@/hooks/use-modal-store";
 import { UserAvatar } from "@/components/user-avatar";
+import { useRouter, useParams } from "next/navigation";
+import { ModalType } from "@/hooks/use-modal-store";
+import { cn } from "@/lib/utils";
 
 interface ServerSectionProps {
     data: {
@@ -26,8 +29,17 @@ interface ServerSectionProps {
 
 export const ServerSection = ({ data, role, server, channelType }: ServerSectionProps) => {
     const { onOpen } = useModal();
+    const router = useRouter();
+    const params = useParams();
 
-
+    const onAction = (e: React.MouseEvent, action: ModalType, channelData: any) => {
+        e.stopPropagation();
+        onOpen(action, { 
+            server, 
+            channel: channelData,
+            channelType 
+        });
+    }
 
     return (
         <div className="space-y-4 mt-2">
@@ -62,8 +74,19 @@ export const ServerSection = ({ data, role, server, channelType }: ServerSection
                         {item.data?.map((data) => (
                             <div 
                                 key={data.id} 
-                                className="flex items-center gap-x-2 px-3 py-2 rounded-md hover:bg-zinc-200/80 
-                                          dark:hover:bg-zinc-700/50 cursor-pointer group transition"
+                                className={cn(
+                                    "flex items-center gap-x-2 px-3 py-2 rounded-md hover:bg-zinc-200/80 dark:hover:bg-zinc-700/50 cursor-pointer group transition",
+                                    // Add highlight for active channel
+                                    item.type === "channel" && params?.channelId === data.id && 
+                                    "bg-zinc-300/80 dark:bg-zinc-700/80 text-zinc-800 dark:text-zinc-200"
+                                )}
+                                onClick={
+                                    item.type === "channel" 
+                                        ? () => router.push(`/servers/${server.id}/channels/${data.id}`)
+                                        : item.type === "member"
+                                            ? () => router.push(`/servers/${server.id}/conversations/${data.id}`)
+                                            : undefined
+                                }
                             >
                                 {item.type === "member" ? (
                                     <UserAvatar 
@@ -81,20 +104,13 @@ export const ServerSection = ({ data, role, server, channelType }: ServerSection
                                     <div className="ml-auto flex items-center gap-x-2">
                                         <ActionTooltip label="Edit">
                                             <Edit 
-                                                onClick={() => onOpen("editChannel", { 
-                                                    server,
-                                                    channel: data,
-                                                    channelType
-                                                })}
+                                                onClick={(e) => onAction(e, "editChannel", data)}
                                                 className="hidden group-hover:block h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
                                             />
                                         </ActionTooltip>
                                         <ActionTooltip label="Delete">
                                             <Trash 
-                                                onClick={() => onOpen("deleteChannel", { 
-                                                    server,
-                                                    channel: data // Use the current data item as the channel
-                                                })}
+                                                onClick={(e) => onAction(e, "deleteChannel", data)}
                                                 className="hidden group-hover:block h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
                                             />
                                         </ActionTooltip>
