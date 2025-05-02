@@ -19,10 +19,12 @@ export const initialProfile = async () => {
         return profile;
     }
 
+    // Use the Clerk username field which appears on the dashboard
     const newProfile = await db.profile.create({
         data: {
             userId: user.id,
-            name: `${user.firstName} ${user.lastName}`,
+            // Directly access the username property - if not available fall back to name
+            name: user.username || `${user.firstName} ${user.lastName}`,
             imageUrl: user.imageUrl,
             email: user.emailAddresses[0].emailAddress
         }
