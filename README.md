@@ -50,7 +50,7 @@ Develop a Discord-inspired communication platform with text, audio, and video ch
 ## Tech Stack
 
 - **Framework**: Next.js 15.0.4
-- **Database**: PostgreSQL with Prisma ORM
+- **Database**: MySQL with Prisma ORM
 - **Authentication**: Clerk
 - **Styling**: Tailwind CSS with shadcn/ui components
 - **State Management**: Zustand
