@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Shield, Pencil, ShieldQuestion, Check, ShieldCheck, Loader2 } from "lucide-react";
+import { Shield, Pencil, Check, ShieldCheck, Loader2 } from "lucide-react";
 import { MemberRole } from "@prisma/client";
 import qs from "query-string";
 import axios from "axios";
@@ -21,13 +21,9 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuPortal,
     DropdownMenuSeparator,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
     DropdownMenuTrigger
- } from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 
 export const MembersModal = () => {
@@ -121,41 +117,35 @@ export const MembersModal = () => {
                                         <DropdownMenuTrigger className="focus:outline-none">
                                             <Pencil className="h-4 w-4 text-amber-700 dark:text-amber-400 cursor-pointer hover:text-amber-900 dark:hover:text-amber-300 transition" />
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent side="right" className="bg-white dark:bg-zinc-800">
-                                            <DropdownMenuSub>
-                                                <DropdownMenuSubTrigger className="flex items-center gap-x-2 px-3 py-2 text-sm">
-                                                    <ShieldQuestion className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                                                    <span>Change Role</span>
-                                                </DropdownMenuSubTrigger>
-                                                <DropdownMenuPortal>
-                                                    <DropdownMenuSubContent className="bg-white dark:bg-zinc-800">
-                                                        <DropdownMenuItem 
-                                                            onClick={() => onRoleChange(member.id, "USER")}
-                                                            className="flex items-center gap-x-2 px-3 py-2 text-sm cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                                                        >
-                                                            <Shield className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                                                            <span>User</span>
-                                                            {member.role === "USER" && (
-                                                                <Check className="h-4 w-4 ml-auto text-emerald-600 dark:text-emerald-400" />
-                                                            )}
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem 
-                                                            onClick={() => onRoleChange(member.id, "MODERATOR")}
-                                                            className="flex items-center gap-x-2 px-3 py-2 text-sm cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                                                        >
-                                                            <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                                                            <span>Moderator</span>
-                                                            {member.role === "MODERATOR" && (
-                                                                <Check className="h-4 w-4 ml-auto text-emerald-600 dark:text-emerald-400" />
-                                                            )}
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuSubContent>
-                                                </DropdownMenuPortal>
-                                            </DropdownMenuSub>
-                                            <DropdownMenuSeparator className="bg-amber-100 dark:bg-amber-700/50" />
+                                        <DropdownMenuContent side="bottom" align="end" className="bg-white dark:bg-zinc-800 w-56">
+                                            <div className="px-3 py-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                                                Change Role
+                                            </div>
+                                            <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-700" />
+                                            <DropdownMenuItem 
+                                                onClick={() => onRoleChange(member.id, "USER")}
+                                                className="px-3 py-2 text-sm cursor-pointer flex items-center gap-x-2"
+                                            >
+                                                <Shield className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                                                <span>User</span>
+                                                {member.role === "USER" && (
+                                                    <Check className="h-4 w-4 ml-auto text-emerald-600 dark:text-emerald-400" />
+                                                )}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem 
+                                                onClick={() => onRoleChange(member.id, "MODERATOR")}
+                                                className="px-3 py-2 text-sm cursor-pointer flex items-center gap-x-2"
+                                            >
+                                                <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                                                <span>Moderator</span>
+                                                {member.role === "MODERATOR" && (
+                                                    <Check className="h-4 w-4 ml-auto text-emerald-600 dark:text-emerald-400" />
+                                                )}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-700" />
                                             <DropdownMenuItem 
                                                 onClick={() => onKick(member.id)}
-                                                className="flex items-center gap-x-2 px-3 py-2 text-sm text-rose-500 dark:text-rose-400 cursor-pointer hover:bg-rose-50 dark:hover:bg-rose-900/20"
+                                                className="cursor-pointer text-rose-500 dark:text-rose-400 px-3 py-2 text-sm flex items-center"
                                             >
                                                 <span>Kick User</span>
                                             </DropdownMenuItem>

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { ChannelType } from "@prisma/client";
 import qs from "query-string";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 import {
     Dialog,
@@ -48,19 +49,28 @@ const formSchema = z.object({
 });
 
 export const CreateChannelModal = () => {
-    const { isOpen, onClose, type } = useModal();
+    const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
     const params = useParams();
 
     const isModalOpen = isOpen && type === "createChannel";
+    const channelType = data?.channelType;
 
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            type: ChannelType.TEXT,
+            type: data?.channelType || ChannelType.TEXT,
         }
     });
+
+    useEffect(() => {
+        if (data?.channelType) {
+            form.setValue("type", data.channelType);
+        } else {
+            form.setValue("type", ChannelType.TEXT);
+        }
+    }, [data?.channelType]);
 
     const isLoading = form.formState.isSubmitting;
 
