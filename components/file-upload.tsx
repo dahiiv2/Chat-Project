@@ -9,11 +9,13 @@ import axios, { AxiosError } from "axios";
 interface FileUploadProps {
     onChange: (url?: string) => void;
     value: string;
+    endpoint: string;
 }
 
 export const FileUpload = ({
     onChange,
     value,
+    endpoint,
 }: FileUploadProps) => {
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -27,6 +29,7 @@ export const FileUpload = ({
             
             const formData = new FormData();
             formData.append("file", file);
+            formData.append("endpoint", endpoint);
             
             const response = await axios.post("/api/upload", formData);
             onChange(response.data.url);
@@ -46,7 +49,29 @@ export const FileUpload = ({
         }
     };
 
-    if (value && fileType !== "pdf") {
+    if (value) {
+        if (fileType === "pdf" && endpoint === "messageFile") {
+            return (
+                <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
+                    <a 
+                        href={value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 text-sm text-amber-500 dark:text-amber-400 hover:underline"
+                    >
+                        {value.split("/").pop()}
+                    </a>
+                    <button
+                        onClick={() => onChange("")}
+                        className="bg-rose-500 text-white p-1 rounded-full absolute -top-2 -right-2 shadow-sm"
+                        type="button"
+                    >
+                        <X className="h-4 w-4"/>
+                    </button>
+                </div>
+            )
+        }
+        
         return (
             <div className="relative h-20 w-20">
                 <Image
@@ -73,7 +98,7 @@ export const FileUpload = ({
                 ref={fileInputRef}
                 onChange={handleFileSelect}
                 className="hidden"
-                accept="image/*"
+                accept={endpoint === "messageFile" ? "image/*,application/pdf" : "image/*"}
             />
             <button
                 onClick={() => fileInputRef.current?.click()}
@@ -83,7 +108,7 @@ export const FileUpload = ({
             >
                 <UploadCloud className="h-10 w-10 text-zinc-500" />
                 <p className="mt-2 text-sm text-zinc-500">
-                    {isUploading ? 'Uploading...' : 'Upload an image'}
+                    {isUploading ? 'Uploading...' : endpoint === "messageFile" ? 'Upload an image or PDF' : 'Upload an image'}
                 </p>
             </button>
             {error && (
