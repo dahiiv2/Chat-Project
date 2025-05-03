@@ -3,6 +3,8 @@ import { RedirectToSignIn } from "@clerk/nextjs";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { ChatHeader } from "@/components/chat/chat-header";
+import { ChatInput } from "@/components/chat/chat-input";
+import { ChatMessages } from "@/components/chat/chat-messages";
 import { getOrCreateConversation } from "@/lib/conversation";
 
 // Using any type for params to avoid TypeScript issues in Next.js 15
@@ -70,16 +72,22 @@ const MemberIDPage = async ({
             </div>
             
             {/* Content area */}
-            <div className="flex-1 flex flex-col overflow-y-auto">
-                <div className="flex-1 relative">
-                    <div className="p-4">
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                            {isSelfConversation ? 
-                                "This is your personal channel! You can write whatever you want here." :
-                                `This is the beginning of your conversation with ${otherMember.profile.name}`
-                            }
-                        </p>
-                    </div>
+            <div className="flex-1 overflow-y-auto">
+                <div className="p-4">
+                    <ChatMessages 
+                        member={currentMember}
+                        name={displayName}
+                        chatId={conversation.id}
+                        type="conversation"
+                        apiUrl="/api/messages"
+                        socketUrl="/api/socket/messages"
+                        socketQuery={{
+                            conversationId: conversation.id,
+                            serverId: params.serverId
+                        }}
+                        paramKey="conversationId"
+                        paramValue={conversation.id}
+                    />
                 </div>
             </div>
         </div>

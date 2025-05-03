@@ -1,4 +1,4 @@
-import { Hash, Video, Mic } from "lucide-react";
+import { MessageSquare, Video, Mic } from "lucide-react";
 import { ChannelType } from "@prisma/client";
 import { MobileToggle } from "@/components/mobile-toggle";
 import { SocketIndicator } from "@/components/socket-indicator";
@@ -22,7 +22,7 @@ export const ChatHeader = ({
     const Icon = () => {
         if (type === "channel") {
             if (!channelType || channelType === "TEXT") {
-                return <Hash className="h-5 w-5 text-zinc-500 dark:text-zinc-400 mr-2" />;
+                return <MessageSquare className="h-5 w-5 text-zinc-500 dark:text-zinc-400 mr-2" />;
             } else if (channelType === "AUDIO") {
                 return <Mic className="h-5 w-5 text-zinc-500 dark:text-zinc-400 mr-2" />;
             } else {

@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { ModalProvider } from '@/components/providers/modal-provider'
 import { SocketProvider } from '@/components/providers/socket-provider'
 import { SocketIndicator } from '@/components/socket-indicator'
+import { QueryProvider } from '@/components/providers/query-provider'
 
 const font = Space_Grotesk({ subsets: ['latin'] })
 
@@ -35,7 +36,9 @@ export default function RootLayout({
           >
             <SocketProvider>
               <ModalProvider />
-              {children}
+              <QueryProvider>
+                {children}
+              </QueryProvider>
               <div className="fixed bottom-1.5 right-4 z-50">
                 <SocketIndicator />
               </div>
