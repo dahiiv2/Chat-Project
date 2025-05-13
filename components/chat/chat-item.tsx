@@ -35,7 +35,7 @@ const formSchema = z.object({
     content: z.string().min(1),
 });
 
-
+// chat item component
 export const ChatItem = ({ 
     message, 
     currentMember,

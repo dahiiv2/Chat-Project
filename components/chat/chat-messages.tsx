@@ -7,6 +7,8 @@ import { Loader2, ServerCrash } from "lucide-react";
 import { Fragment } from "react";
 import { Message, Member, Profile } from "@prisma/client";
 import { ChatItem } from "./chat-item";
+import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
 
 type MessageWithMemberWithProfile = Message & {
     member: Member & {
@@ -37,10 +39,12 @@ export const ChatMessages = ({
     paramValue,
     type,
 }: ChatMessagesProps) => {
-    const chatRef = useRef<ElementRef<"div">>(null);
-    const bottomRef = useRef<ElementRef<"div">>(null);
+    const chatRef = useRef<HTMLDivElement>(null);
+    const bottomRef = useRef<HTMLDivElement>(null);
 
     const queryKey = `chat:${chatId}`;
+    const addKey = `chat:${chatId}:messages`;
+    const updateKey = `chat:${chatId}:messages:update`;
 
     const {
         data,
@@ -54,7 +58,16 @@ export const ChatMessages = ({
         paramKey,
         paramValue,
     });
+    useChatSocket({queryKey, addKey, updateKey})
+    useChatScroll({
+        chatRef,
+        bottomRef,
+        shouldLoadMore: !!hasNextPage && !isFetchingNextPage,
+        loadMore: fetchNextPage,
+        count: data?.pages.length || 0,
+    })
 
+    // Loading state
     if (status === "pending") {
         return (
             <div className="flex flex-col items-center justify-center h-full gap-3 absolute inset-0">
@@ -66,6 +79,7 @@ export const ChatMessages = ({
         );
     }
 
+    // Error state
     if (status === "error") {
         return (
             <div className="flex flex-col items-center justify-center h-full gap-3 absolute inset-0">
@@ -82,34 +96,53 @@ export const ChatMessages = ({
 
     return (
         <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto">
-            {/* Welcome component at the top of the chat */}
-            <div className="flex-1">
-                <ChatWelcome 
-                    name={name}
-                    type={type}
-                    isSelfConversation={isSelfConversation}
-                />
-                <div className="flex flex-col-reverse mt-auto">
-                    {data?.pages?.map((group, i) => (
-                        <Fragment key={i}>
-                            {group.items.map((message: MessageWithMemberWithProfile) => (
-                                <ChatItem 
-                                    key={message.id}
-                                    message={message} 
-                                    currentMember={member}
-                                    deleted={message.deleted}
-                                    isUpdated={message.updatedAt !== message.createdAt}
-                                    socketUrl={socketUrl}
-                                    socketQuery={socketQuery}
-                                    fileUrl={message.fileUrl || undefined}
-                                />
-                            ))}
-                        </Fragment>
-                    ))}
+            {!hasNextPage && (
+                /* Welcome component at the top of the chat */
+                <div className="flex-1">
+                    <ChatWelcome 
+                        name={name}
+                        type={type}
+                        isSelfConversation={isSelfConversation}
+                    />
                 </div>
-                
-                {/* Messages will be rendered here in the future */}
+            )}
+            {/* Load previous messages */}
+            {hasNextPage && (
+                <div className="flex justify-center">
+                    {isFetchingNextPage ? (
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : (
+                        // Load previous messages button, calls fetchNextPage
+                        <button
+                            onClick={() => fetchNextPage()}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-zinc-500/10 transition-colors"
+                        >
+                            Load previous messages
+                        </button>
+                    )}
+                </div>
+            )}
+            
+            {/* Messages */}
+            <div className="flex flex-col-reverse mt-auto">
+                {data?.pages?.map((group, i) => (
+                    <Fragment key={i}>
+                        {group.items.map((message: MessageWithMemberWithProfile) => (
+                            <ChatItem 
+                                key={message.id}
+                                message={message} 
+                                currentMember={member}
+                                deleted={message.deleted}
+                                isUpdated={message.updatedAt !== message.createdAt}
+                                socketUrl={socketUrl}
+                                socketQuery={socketQuery}
+                                fileUrl={message.fileUrl || undefined}
+                            />
+                        ))}
+                    </Fragment>
+                ))}
             </div>
+            {/* Scroll to bottom */}
             <div ref={bottomRef} />
         </div>
     );
