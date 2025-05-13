@@ -1,7 +1,6 @@
 import { MessageSquare, Video, Mic } from "lucide-react";
 import { ChannelType } from "@prisma/client";
 import { MobileToggle } from "@/components/mobile-toggle";
-import { SocketIndicator } from "@/components/socket-indicator";
 import { ChatVideoButton } from "./chat-video-button";
 
 interface ChatHeaderProps {
@@ -64,13 +63,23 @@ export const ChatHeader = ({
             </div>
             
             {/* Content with channel info */}
-            <div className="flex items-center p-2 mt-2">
-                <Icon />
-                <span className="font-bold text-xl text-zinc-700 dark:text-white relative inline-flex">
-                    <span className="relative z-10">{name}</span>
-                    <span className="absolute inset-0 bg-white/20 dark:bg-white/10 blur-md rounded-lg -z-0"></span>
-                </span>
+            <div className="flex items-center justify-between p-2 mt-2">
+                <div className="flex items-center">
+                    <Icon />
+                    <span className="font-bold text-xl text-zinc-700 dark:text-white relative inline-flex">
+                        <span className="relative z-10">{name}</span>
+                        <span className="absolute inset-0 bg-white/20 dark:bg-white/10 blur-md rounded-lg -z-0"></span>
+                    </span>
+                </div>
+                
+                {/* Video button - only show in conversations that are not Personal Notes */}
+                {type === "conversation" && name !== "Personal Notes" && (
+                    <div className="ml-auto">
+                        <ChatVideoButton />
+                    </div>
+                )}
             </div>
+            
         </div>
     );
 }

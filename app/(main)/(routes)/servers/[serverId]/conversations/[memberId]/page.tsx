@@ -6,14 +6,19 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
 import { getOrCreateConversation } from "@/lib/conversation";
+import { MediaRoom } from "@/components/media-room";
 
 // Using any type for params to avoid TypeScript issues in Next.js 15
 interface MemberIDPageProps {
     params: any;
+    searchParams: {
+        video?: boolean;
+    };
 }
 
 const MemberIDPage = async ({ 
-    params 
+    params,
+    searchParams
 }: MemberIDPageProps) => {
     const profile = await currentProfile();
 
@@ -71,36 +76,49 @@ const MemberIDPage = async ({
                 </div>
             </div>
             
-            {/* Content area */}
-            <div className="flex-1 overflow-y-auto">
-                <div className="p-4">
-                    <ChatMessages 
-                        member={currentMember}
-                        name={displayName}
+            {/* Main content - conditionally show video or chat */}
+            {searchParams.video ? (
+                <div className="flex-1">
+                    <MediaRoom
                         chatId={conversation.id}
-                        type="conversation"
-                        apiUrl="/api/direct-messages"
-                        socketUrl="/api/socket/direct-messages"
-                        socketQuery={{
-                            conversationId: conversation.id
-                        }}
-                        paramKey="conversationId"
-                        paramValue={conversation.id}
+                        video={true}
+                        audio={true}
                     />
                 </div>
-            </div>
-            
-            {/* Chat input fixed at the bottom */}
-            <div className="mt-auto pb-6 px-4">
-                <ChatInput 
-                    name={otherMember.profile.name}
-                    type="conversation"
-                    apiUrl="/api/socket/direct-messages"
-                    query={{
-                        conversationId: conversation.id
-                    }}
-                />
-            </div>
+            ) : (
+                <>
+                    {/* Content area */}
+                    <div className="flex-1 overflow-y-auto">
+                        <div className="p-4">
+                            <ChatMessages 
+                                member={currentMember}
+                                name={displayName}
+                                chatId={conversation.id}
+                                type="conversation"
+                                apiUrl="/api/direct-messages"
+                                socketUrl="/api/socket/direct-messages"
+                                socketQuery={{
+                                    conversationId: conversation.id
+                                }}
+                                paramKey="conversationId"
+                                paramValue={conversation.id}
+                            />
+                        </div>
+                    </div>
+                    
+                    {/* Chat input fixed at the bottom */}
+                    <div className="mt-auto pb-6 px-4">
+                        <ChatInput 
+                            name={otherMember.profile.name}
+                            type="conversation"
+                            apiUrl="/api/socket/direct-messages"
+                            query={{
+                                conversationId: conversation.id
+                            }}
+                        />
+                    </div>
+                </>
+            )}
         </div>
      );
 }
