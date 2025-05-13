@@ -23,14 +23,15 @@ export const MediaRoom = ({
     const [token, setToken] = useState("");
 
     useEffect(() => {
-        if (!user?.firstName || !user?.lastName) return;
+        if (!user) return;
 
-        const name = `${user.firstName} ${user.lastName}`;
+        // Use the same logic as initialProfile
+        const displayName = user.username || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User';
 
         (async () => {
             try {
                 // Using the updated API endpoint path that matches our Pages Router implementation
-                const resp = await fetch(`/api/livekit?room=${chatId}&username=${name}`);
+                const resp = await fetch(`/api/livekit?room=${chatId}&username=${displayName}`);
                 const data = await resp.json();
                 setToken(data.token);
                 console.log("Token received:", !!data.token); // Debug log
