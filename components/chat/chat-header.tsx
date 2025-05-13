@@ -2,6 +2,7 @@ import { MessageSquare, Video, Mic } from "lucide-react";
 import { ChannelType } from "@prisma/client";
 import { MobileToggle } from "@/components/mobile-toggle";
 import { SocketIndicator } from "@/components/socket-indicator";
+import { ChatVideoButton } from "./chat-video-button";
 
 interface ChatHeaderProps {
     name: string;

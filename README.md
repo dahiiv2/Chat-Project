@@ -58,6 +58,7 @@ Develop a Discord-inspired communication platform with text, audio, and video ch
 - **State Management**: Zustand
 - **File Uploads**: UploadThing
 - **Form Handling**: react-hook-form with Zod validation
+- **Real-time Communication**: LiveKit
 
 ## Environment Variables
 
