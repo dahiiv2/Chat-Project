@@ -11,9 +11,7 @@ import { MediaRoom } from "@/components/media-room";
 // Using any type for params to avoid TypeScript issues in Next.js 15
 interface MemberIDPageProps {
     params: any;
-    searchParams: {
-        video?: boolean;
-    };
+    searchParams: any;
 }
 
 const MemberIDPage = async ({ 
