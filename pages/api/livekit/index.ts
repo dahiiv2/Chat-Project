@@ -32,17 +32,24 @@ export default async function handler(
       return res.status(500).json({ error: 'Server misconfigured' });
     }
 
-    // Create a new token
+    // Create stable room identifiers with room prefix for easier debugging
+    const roomName = `chat_${room}`;
+    
+    // Use more specific identity to avoid conflicts
     const at = new AccessToken(apiKey, apiSecret, {
-      identity: username as string
+      identity: username as string,
+      name: username as string, // Add name for better UI display
     });
 
-    // Grant permissions to join room
+    // Grant more specific permissions to ensure proper connection
     at.addGrant({
-      room: room as string,
+      room: roomName,
       roomJoin: true,
       canPublish: true,
-      canSubscribe: true
+      canSubscribe: true,
+      roomCreate: true, // Allow room creation if doesn't exist
+      roomAdmin: false,  // Not an admin by default
+      roomList: false,   // Cannot list other rooms
     });
 
     // Generate JWT token
