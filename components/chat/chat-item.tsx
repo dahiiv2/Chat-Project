@@ -55,6 +55,9 @@ export const ChatItem = ({
     const isCurrentUser = message.member.id === currentMember.id;
     const isAdmin = currentMember.role === "ADMIN";
     const isModerator = currentMember.role === "MODERATOR";
+    
+    // Check if we're in a direct message conversation
+    const isDirect = socketUrl.includes("/direct-messages");
     const isOwner = currentMember.id === message.member.profileId;
     
     // Users can delete their own messages, admins and moderators can delete any message
@@ -152,13 +155,14 @@ export const ChatItem = ({
                             onClick={onMemberClick}
                             className={cn(
                                 "font-semibold text-sm hover:underline cursor-pointer",
-                                message.member.role === "ADMIN" ? "text-amber-600 dark:text-amber-500 glow-text-sm" : 
-                                message.member.role === "MODERATOR" ? "text-amber-500 dark:text-amber-300" : "text-zinc-700 dark:text-zinc-200"
+                                !isDirect && message.member.role === "ADMIN" ? "text-amber-600 dark:text-amber-500 glow-text-sm" : 
+                                !isDirect && message.member.role === "MODERATOR" ? "text-amber-500 dark:text-amber-300" : "text-zinc-700 dark:text-zinc-200"
                             )}
                         >
                             {message.member.profile.name}
                         </p>
-                        {(message.member.role === "ADMIN" || message.member.role === "MODERATOR") && (
+                        {/* Only show role badges in server channels (not in DMs) */}
+                        {!isDirect && (message.member.role === "ADMIN" || message.member.role === "MODERATOR") && (
                             <span className={cn(
                                 "ml-2 text-xs px-1 py-0.5 rounded-md",
                                 message.member.role === "ADMIN" ? "bg-amber-500/20 text-amber-600 dark:text-amber-500" : "bg-amber-300/20 text-amber-500 dark:text-amber-300"
