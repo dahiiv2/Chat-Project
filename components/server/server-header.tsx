@@ -1,3 +1,13 @@
+/**
+ * ServerHeader Component
+ * 
+ * Displays the server title with dropdown menu for server management:
+ * - Shows server name with dropdown trigger
+ * - Provides role-based access to server management functions
+ * - Contains dropdown items for various server actions (invite, settings, manage members)
+ * - Handles server deletion and exit actions
+ * - Adapts UI based on user's role permissions (admin, moderator, user)
+ */
 "use client";
 
 import { ServerWithmembersWithProfiles } from "@/types";
@@ -8,6 +18,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useModal } from "@/hooks/use-modal-store";
 import { useState } from "react";
 
+/**
+ * Props for the ServerHeader component
+ * @property server - Server data including members with their profiles
+ * @property role - Current user's role within the server (ADMIN, MODERATOR, USER)
+ */
 interface ServerHeaderProps {
     server: ServerWithmembersWithProfiles
     role?: MemberRole;
@@ -17,19 +32,25 @@ export const ServerHeader = ({
     server,
     role
 }: ServerHeaderProps) => {
+    // Access modal store for opening various server-related modals
     const { onOpen } = useModal();
+    // Track dropdown menu open state
     const [open, setOpen] = useState(false);
     
+    // Determine user permission levels for conditional rendering
     const isAdmin = role === MemberRole.ADMIN;
     const isModerator = isAdmin || role === MemberRole.MODERATOR;
 
+    // Helper function to execute an action and close the dropdown
     const handleAction = (action: () => void) => {
         action();
         setOpen(false);
     };
 
     return (
+        // Dropdown menu for server management options
         <DropdownMenu open={open} onOpenChange={setOpen}>
+            {/* Server name button that triggers the dropdown */}
             <DropdownMenuTrigger
                 className="focus:outline-none"
                 asChild

@@ -1,3 +1,13 @@
+/**
+ * CreateChannelModal Component
+ * 
+ * A modal dialog for creating new channels within a server.
+ * Features include:
+ * - Channel name input with validation (cannot be 'general')
+ * - Channel type selection (TEXT, AUDIO, VIDEO)
+ * - Form submission to create the channel via API
+ * - Preset channel type when opened from specific contexts
+ */
 "use client";
 
 import * as z from "zod";
@@ -36,6 +46,11 @@ import {
     SelectValue
 } from "@/components/ui/select";
 
+/**
+ * Zod schema for form validation
+ * - Name: Required string that cannot be 'general' (reserved name)
+ * - Type: Must be a valid ChannelType enum value (TEXT, AUDIO, VIDEO)
+ */
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Channel name is required."
@@ -48,14 +63,24 @@ const formSchema = z.object({
     type: z.nativeEnum(ChannelType)
 });
 
+/**
+ * Modal component for creating a new channel within a server
+ */
 export const CreateChannelModal = () => {
+    // Access modal store for state management
     const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
     const params = useParams();
 
+    // Only show this modal when the createChannel type is active
     const isModalOpen = isOpen && type === "createChannel";
+    // Channel type can be preset when opened from specific UI locations
     const channelType = data?.channelType;
 
+    /**
+     * Initialize form with zod validation
+     * Default to TEXT channel type unless another type is specified
+     */
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -64,6 +89,10 @@ export const CreateChannelModal = () => {
         }
     });
 
+    /**
+     * Update channel type when modal data changes
+     * Ensures the form reflects the intended channel type when opened from different contexts
+     */
     useEffect(() => {
         if (data?.channelType) {
             form.setValue("type", data.channelType);
@@ -72,10 +101,16 @@ export const CreateChannelModal = () => {
         }
     }, [data?.channelType]);
 
+    // Track form submission state
     const isLoading = form.formState.isSubmitting;
 
+    /**
+     * Handle form submission to create a new channel
+     * Posts channel data to API with the current server ID
+     */
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
+            // Build API URL with the server ID as a query parameter
             const url = qs.stringifyUrl({
                 url: "/api/channels",
                 query: {
@@ -83,8 +118,10 @@ export const CreateChannelModal = () => {
                 }
             });
 
+            // Send channel creation request to server
             await axios.post(url, values);
             
+            // Reset form, refresh page data, and close modal
             form.reset();
             router.refresh();
             onClose();
@@ -93,6 +130,10 @@ export const CreateChannelModal = () => {
         }
     }
 
+    /**
+     * Reset form state when modal is closed
+     * Ensures a clean form when reopening the modal
+     */
     const handleClose = () => {
         form.reset();
         onClose();
@@ -171,6 +212,7 @@ export const CreateChannelModal = () => {
                                 )}
                             />
                         </div>
+                        {/* Footer with submit button */}
                         <DialogFooter className="bg-gray-100 dark:bg-[#2B2D31] px-6 py-4">
                             <Button 
                                 disabled={isLoading}

@@ -21,6 +21,7 @@ export default async function InviteCodePage({
         return redirect("/");
     }
 
+    // Check if user is already a member of the server
     const existingServer = await db.server.findFirst({
         where: {
             inviteCode,
@@ -32,10 +33,12 @@ export default async function InviteCodePage({
         }
     });
 
+    // If user is already a member, redirect to the server
     if (existingServer) {
         return redirect(`/servers/${existingServer.id}`)
     }
 
+    // Add user to the server
     const server = await db.server.update({
         where: {
             inviteCode,
@@ -51,6 +54,7 @@ export default async function InviteCodePage({
         }
     });
 
+    // If server is found, redirect to the server
     if (server) {
         return redirect(`/servers/${server.id}`)
     }

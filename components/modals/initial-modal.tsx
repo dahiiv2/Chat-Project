@@ -1,3 +1,9 @@
+/**
+ * InitialModal Component
+ * 
+ * First-time setup modal displayed when a user first joins the platform.
+ * Handles server creation with name and image upload functionality.
+ */
 "use client";
 
 import * as z from "zod";
@@ -28,6 +34,11 @@ import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
 import { ModalWrapper } from "@/components/ui/modal-wrapper";
 
+/**
+ * Form validation schema
+ * - Server name: Required string
+ * - Image URL: Required string from file upload
+ */
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Server name is required."
@@ -37,14 +48,23 @@ const formSchema = z.object({
     })
 });
 
+/**
+ * Modal component for first-time server setup
+ * Cannot be dismissed as it's required for onboarding
+ */
 export const InitialModal = () => {
+    // Prevent hydration errors with server-side rendering
     const [isMounted, setIsMounted] = useState(false);
     const router = useRouter();
 
+    // Only render modal after component mounts on client
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
+    /**
+     * Initialize form with validation
+     */
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -53,19 +73,29 @@ export const InitialModal = () => {
         }
     });
 
+    // Track form submission state for UI feedback
     const isLoading = form.formState.isSubmitting;
 
+    /**
+     * Handle form submission
+     * Creates the user's first server and reloads page to navigate to it
+     */
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
+            // Create server via API
             await axios.post("/api/servers", values);
+            // Reset form state
             form.reset();
+            // Update router cache
             router.refresh();
+            // Force page reload to update UI with new server
             window.location.reload();
         } catch (error) {
             console.log(error);
         }
     }
 
+    // Prevent rendering during server-side rendering
     if (!isMounted) {
         return null;
     }

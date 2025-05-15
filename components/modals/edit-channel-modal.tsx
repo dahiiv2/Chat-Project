@@ -1,3 +1,9 @@
+/**
+ * EditChannelModal Component
+ * 
+ * Provides interface for modifying existing channel settings.
+ * Handles updating channel name and type with form validation.
+ */
 "use client";
 
 import * as z from "zod";
@@ -36,6 +42,11 @@ import {
     SelectValue
 } from "@/components/ui/select";
 
+/**
+ * Form validation schema
+ * - Name: Required string that cannot be 'general' (reserved name)
+ * - Type: Must be a valid ChannelType enum value (TEXT, AUDIO, VIDEO)
+ */
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Channel name is required."
@@ -48,13 +59,23 @@ const formSchema = z.object({
     type: z.nativeEnum(ChannelType)
 });
 
+/**
+ * Modal component for editing existing channel details
+ */
 export const EditChannelModal = () => {
+    // Access modal state management
     const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
 
+    // Only display this modal when editChannel type is active
     const isModalOpen = isOpen && type === "editChannel";
+    // Extract channel and server data passed to the modal
     const { channel, server } = data;
 
+    /**
+     * Initialize form with validation
+     * Default values will be populated from channel data when available
+     */
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -63,25 +84,36 @@ export const EditChannelModal = () => {
         }
     });
 
+    /**
+     * Populate form with channel data when it becomes available
+     * Updates form values whenever the channel data changes
+     */
     useEffect(() => {
         if (channel) {
             form.setValue("name", channel.name);
             
             // Convert the ChannelType enum value to the correct string format if needed
             if (data.channelType) {
-                form.setValue("type", data.channelType as any);
+                form.setValue("type", data.channelType as any); // Type cast to handle Next.js 15 type compatibility
             } else {
-                form.setValue("type", ChannelType.TEXT as any);
+                form.setValue("type", ChannelType.TEXT as any); // Default to TEXT channel if type not specified
             }
         }
     }, [form, channel, data]);
 
+    // Track form submission state for UI feedback
     const isLoading = form.formState.isSubmitting;
 
+    /**
+     * Handle form submission
+     * Updates channel details via API patch request
+     */
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
+            // Debug log for form submission values
             console.log("Submitting form with values:", values);
             
+            // Build API URL with server ID as query parameter for authorization check
             const url = qs.stringifyUrl({
                 url: `/api/channels/${channel?.id}`,
                 query: {
@@ -89,8 +121,10 @@ export const EditChannelModal = () => {
                 }
             });
 
+            // Send update request to channels API endpoint
             await axios.patch(url, values);
             
+            // Reset form state and close modal
             form.reset();
             router.refresh();
             onClose();

@@ -1,16 +1,32 @@
+/**
+ * ChatHeader Component
+ * 
+ * Displays the header section of chat areas (channels or direct messages)
+ * with appropriate icons based on channel type (text, audio, video)
+ * or user profile images for conversations.
+ * 
+ * Includes mobile navigation toggle and video call button for appropriate channels.
+ */
+
 import { MessageSquare, Video, Mic } from "lucide-react";
 import { ChannelType } from "@prisma/client";
 import { MobileToggle } from "@/components/mobile-toggle";
 import { ChatVideoButton } from "./chat-video-button";
 
+/**
+ * Props for the ChatHeader component
+ */
 interface ChatHeaderProps {
-    name: string;
-    channelType?: ChannelType;
-    serverId?: string;
-    type: "channel" | "conversation";
-    imageUrl?: string;
+    name: string;                       // Display name for the channel or conversation
+    channelType?: ChannelType;         // Type of channel (TEXT, AUDIO, VIDEO) from Prisma schema
+    serverId?: string;                 // ID of the server (if in a server channel)
+    type: "channel" | "conversation";   // Whether this is a server channel or direct message
+    imageUrl?: string;                 // Profile image URL for conversations
 }
 
+/**
+ * Renders the chat header with appropriate visual elements based on type
+ */
 export const ChatHeader = ({
     name,
     channelType,
@@ -18,7 +34,13 @@ export const ChatHeader = ({
     type,
     imageUrl
 }: ChatHeaderProps) => {
-    // Get the correct icon based on channel type
+    /**
+     * Dynamically renders the appropriate icon based on channel type:
+     * - Text channels: Message Square icon
+     * - Audio channels: Microphone icon
+     * - Video channels: Video camera icon
+     * - Conversations: User profile image (if available)
+     */
     const Icon = () => {
         if (type === "channel") {
             if (!channelType || channelType === "TEXT") {

@@ -1,3 +1,14 @@
+/**
+ * ChatMessages Component
+ * 
+ * Core component for displaying the message history in both channel and direct message chats.
+ * Features include:
+ * - Real-time message updates via WebSockets
+ * - Infinite scrolling with cursor-based pagination
+ * - Automatic scrolling to new messages
+ * - Loading and error states
+ * - Welcome message for empty channels
+ */
 "use client";
 
 import { useRef, ElementRef } from "react";
@@ -10,24 +21,34 @@ import { ChatItem } from "./chat-item";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
 
+/**
+ * Extended type for messages that includes the member who sent it
+ * and their profile information for displaying avatars and names
+ */
 type MessageWithMemberWithProfile = Message & {
     member: Member & {
         profile: Profile;
     };
 };
 
+/**
+ * Props for the ChatMessages component
+ */
 interface ChatMessagesProps {
-    name: string;
-    member: any;
-    chatId: string;
-    apiUrl: string;
-    socketUrl: string;
-    socketQuery: Record<string, string>;
-    paramKey: "channelId" | "conversationId";
-    paramValue: string;
-    type: "channel" | "conversation";
+    name: string;                         // Name of channel or conversation partner
+    member: any;                          // Current user's member object (using any for Next.js 15 compatibility)
+    chatId: string;                       // Unique identifier for the chat
+    apiUrl: string;                       // API endpoint for fetching messages
+    socketUrl: string;                    // WebSocket endpoint for real-time updates
+    socketQuery: Record<string, string>;   // Query parameters for socket connection
+    paramKey: "channelId" | "conversationId"; // Parameter key based on chat type
+    paramValue: string;                   // ID value for the channel or conversation
+    type: "channel" | "conversation";      // Whether this is a server channel or direct message
 }
 
+/**
+ * Renders the message list with pagination, real-time updates, and scroll management
+ */
 export const ChatMessages = ({
     name,
     member,
@@ -39,26 +60,38 @@ export const ChatMessages = ({
     paramValue,
     type,
 }: ChatMessagesProps) => {
-    const chatRef = useRef<HTMLDivElement>(null);
-    const bottomRef = useRef<HTMLDivElement>(null);
+    // References for scroll management
+    const chatRef = useRef<HTMLDivElement>(null);   // Reference to the chat container
+    const bottomRef = useRef<HTMLDivElement>(null);  // Reference to the bottom of chat for scrolling
 
-    const queryKey = `chat:${chatId}`;
-    const addKey = `chat:${chatId}:messages`;
-    const updateKey = `chat:${chatId}:messages:update`;
+    // Cache keys for react-query and socket events
+    const queryKey = `chat:${chatId}`;               // Main query cache key
+    const addKey = `chat:${chatId}:messages`;        // Socket event for new messages
+    const updateKey = `chat:${chatId}:messages:update`; // Socket event for updated messages
 
+    /**
+     * Custom hooks for chat functionality:
+     * 1. useChatQuery - Fetches messages with pagination
+     * 2. useChatSocket - Handles real-time message updates
+     * 3. useChatScroll - Manages scroll position and infinite loading
+     */
     const {
-        data,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        status,
+        data,                // Paginated message data
+        fetchNextPage,       // Function to load more messages
+        hasNextPage,         // Whether more messages exist
+        isFetchingNextPage,  // Loading state for pagination
+        status,              // Overall query status
     } = useChatQuery({
         queryKey,
         apiUrl,
         paramKey,
         paramValue,
     });
+    
+    // Setup WebSocket connection for real-time updates
     useChatSocket({queryKey, addKey, updateKey})
+    
+    // Configure scrolling behavior and infinite loading
     useChatScroll({
         chatRef,
         bottomRef,
@@ -67,7 +100,9 @@ export const ChatMessages = ({
         count: data?.pages.length || 0,
     })
 
-    // Loading state
+    /**
+     * Loading state - displays a centered loading spinner with gold/amber accent
+     */
     if (status === "pending") {
         return (
             <div className="flex flex-col items-center justify-center h-full gap-3 absolute inset-0">
@@ -79,7 +114,9 @@ export const ChatMessages = ({
         );
     }
 
-    // Error state
+    /**
+     * Error state - displays a centered error message with red accent
+     */
     if (status === "error") {
         return (
             <div className="flex flex-col items-center justify-center h-full gap-3 absolute inset-0">
@@ -92,14 +129,15 @@ export const ChatMessages = ({
     }
 
     // Detect if this is a self-conversation (for Personal Notes feature)
+    // This enables special styling and messaging for the personal notes functionality
     const isSelfConversation = type === "conversation" && name === "Personal Notes";
 
     return (
         <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto">
+            {/* Show welcome component when we've loaded all messages (reached the beginning) */}
             {!hasNextPage && (
-                /* Welcome component at the top of the chat */
                 <div className="flex-1">
-                    <ChatWelcome 
+                    <ChatWelcome
                         name={name}
                         type={type}
                         isSelfConversation={isSelfConversation}

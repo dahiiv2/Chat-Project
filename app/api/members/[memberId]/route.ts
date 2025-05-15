@@ -1,10 +1,33 @@
+/**
+ * Member ID API Route
+ * 
+ * This API endpoint handles server member operations including:
+ * - DELETE: Removing a member from a server (kick)
+ * - PATCH: Updating a member's role (promote/demote)
+ * 
+ * Both operations enforce permission checks to ensure only the server owner
+ * can perform these actions, and prevent self-modification.
+ */
+
+// Authentication and database utilities
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
+/**
+ * DELETE /api/members/[memberId]
+ * 
+ * Removes a member from a server (kick functionality)
+ * Only the server owner can perform this action
+ * Server owners cannot kick themselves
+ * 
+ * @param req Request with serverId in search params
+ * @param params Contains route parameters including memberId
+ * @returns The updated server object with members list
+ */
 export async function DELETE(
     req: Request,
-    { params }: any
+    { params }: any  // Using 'any' type to bypass strict typing in Next.js 15
 ) {
     try {
         // get the current user's profile
@@ -31,17 +54,20 @@ export async function DELETE(
 
         // delete the member
         // important: we check profileId to ensure only server owner can delete members
+        // Delete the member (kick from server)
+        // The where clause ensures only the server owner can perform this operation
+        // The nested conditions in deleteMany ensure the owner can't kick themselves
         const server = await db.server.update({
             where: {
-                id: serverId,
-                profileId: profile.id,
+                id: serverId,                 // Match the server ID
+                profileId: profile.id,        // Ensure current user is the server owner
             },
             data: {
                 members: {
                     deleteMany: {
-                        id: params.memberId,
+                        id: params.memberId,      // Target the specific member
                         profileId: {
-                            not: profile.id
+                            not: profile.id        // Prevent owner from removing themselves
                         }
                     }
                 }
@@ -49,10 +75,10 @@ export async function DELETE(
             include: {
                 members: {
                     include: {
-                        profile: true
+                        profile: true           // Include member profile data
                     },
                     orderBy: {
-                        role: "asc"
+                        role: "asc"             // Sort members by role
                     }
                 }
             }
@@ -66,9 +92,20 @@ export async function DELETE(
     }
 }
 
+/**
+ * PATCH /api/members/[memberId]
+ * 
+ * Updates a member's role in the server (promote/demote)
+ * Only the server owner can perform this action
+ * Server owners cannot modify their own role
+ * 
+ * @param req Request with role in body and serverId in search params
+ * @param params Contains route parameters including memberId
+ * @returns The updated server object with members list
+ */
 export async function PATCH(
     req: Request,
-    { params }: any
+    { params }: any  // Using 'any' type to bypass strict typing in Next.js 15
 ) {
     try {
         // get the current user's profile
@@ -98,22 +135,25 @@ export async function PATCH(
 
         // update the member's role
         // important: we check profileId to ensure only server owner can update roles
+        // Update the member's role (promote/demote)
+        // The where clause ensures only the server owner can perform this operation
+        // The nested conditions in update.where ensure owners can't modify their own role
         const server = await db.server.update({
             where: {
-                id: serverId,
-                profileId: profile.id,
+                id: serverId,                 // Match the server ID
+                profileId: profile.id,        // Ensure current user is the server owner
             },
             data: {
                 members: {
                     update: {
                         where: {
-                            id: params.memberId,
+                            id: params.memberId,    // Target the specific member
                             profileId: {
-                                not: profile.id
+                                not: profile.id      // Prevent owner from changing their own role
                             }
                         },
                         data: {
-                            role,
+                            role,                   // Update to the new role value
                         }
                     }
                 }
@@ -121,10 +161,10 @@ export async function PATCH(
             include: {
                 members: {
                     include: {
-                        profile: true
+                        profile: true             // Include member profile data
                     },
                     orderBy: {
-                       role: "asc"
+                       role: "asc"               // Sort members by role
                     }
                 }
             }

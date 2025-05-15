@@ -1,3 +1,9 @@
+/**
+ * DeleteChannelModal Component
+ * 
+ * Confirmation dialog for channel deletion that sends a delete request
+ * to the API and handles navigation after successful deletion.
+ */
 "use client";
 import axios from "axios";
 import { useState } from "react";
@@ -15,18 +21,31 @@ import {
 import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Modal component for confirming channel deletion
+ */
 export const DeleteChannelModal = () => {
+    // Access modal state management
     const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
+    
+    // Only display this modal when deleteChannel type is active
     const isModalOpen = isOpen && type === "deleteChannel";
+    // Extract server and channel data passed to the modal
     const { server, channel } = data;
 
+    // Track loading state for UI feedback
     const [isLoading, setIsLoading] = useState(false);
 
+    /**
+     * Handle delete confirmation
+     * Sends delete request to API and handles navigation after deletion
+     */
     const onClick = async () => {
         try {
             setIsLoading(true);
             
+            // Build API URL with server ID as query parameter for authorization check
             const url = qs.stringifyUrl({
                 url: `/api/channels/${channel?.id}`,
                 query: {
@@ -34,8 +53,10 @@ export const DeleteChannelModal = () => {
                 }
             });
             
+            // Send delete request to channels API endpoint
             await axios.delete(url);
             
+            // Close modal after successful deletion
             onClose();
             // Navigate first, then refresh to ensure proper UI update
             router.push(`/servers/${server?.id}`);
@@ -64,6 +85,7 @@ export const DeleteChannelModal = () => {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="px-6 py-4">
+                    {/* Cancel button with ghost variant */}
                     <Button
                         disabled={isLoading}
                         onClick={() => onClose()}
@@ -71,6 +93,7 @@ export const DeleteChannelModal = () => {
                     >
                         Cancel
                     </Button>
+                    {/* Delete button with destructive styling for warning */}
                     <Button
                         disabled={isLoading}
                         onClick={onClick}

@@ -1,3 +1,9 @@
+/**
+ * DeleteServerModal Component
+ * 
+ * Confirmation dialog for server deletion that sends a delete request
+ * to the API and handles navigation after successful deletion.
+ */
 "use client";
 import axios from "axios";
 import { useState } from "react";
@@ -14,20 +20,34 @@ import {
 import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Modal component for confirming server deletion
+ */
 export const DeleteServerModal = () => {
+    // Access modal state management
     const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
 
+    // Only display this modal when deleteServer type is active
     const isModalOpen = isOpen && type === "deleteServer";
+    // Extract server data passed to the modal
     const { server } = data;
 
+    // Track loading state for UI feedback
     const [isLoading, setIsLoading] = useState(false);
 
+    /**
+     * Handle delete confirmation
+     * Sends delete request to API and navigates to home page after successful deletion
+     */
     const onClick = async () => {
         try {
             setIsLoading(true);
+            // Send delete request to servers API endpoint
             await axios.delete(`/api/servers/${server?.id}`);
+            // Close modal after successful deletion
             onClose();
+            // Update router cache and redirect to home page
             router.refresh();
             router.push("/");
         } catch (error) {
@@ -51,6 +71,7 @@ export const DeleteServerModal = () => {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="px-6 py-4">
+                    {/* Cancel button with ghost variant */}
                     <Button
                         disabled={isLoading}
                         onClick={() => onClose()}
@@ -58,6 +79,7 @@ export const DeleteServerModal = () => {
                     >
                         Cancel
                     </Button>
+                    {/* Delete button with destructive styling for warning */}
                     <Button
                         disabled={isLoading}
                         onClick={onClick}

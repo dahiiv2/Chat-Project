@@ -1,4 +1,4 @@
-# Discord-Like Chat Application
+# Chat Application
 
 A real-time chat application with server management, channels, and direct messaging functionality built with Next.js 15.0.4, Tailwind CSS, and Prisma.
 
@@ -14,7 +14,7 @@ This application is the final project for DAW (Web Application Development, 2nd 
 
 ## Project Objectives
 
-Develop a Discord-inspired communication platform with text, audio, and video channels, aimed at companies requiring a hierarchical communication system to facilitate real-time interaction between teams and departments, optimizing coordination.
+Develop a communication platform with text, audio, and video channels, aimed at companies requiring a hierarchical communication system to facilitate real-time interaction between teams and departments, optimizing coordination.
 
 ## Project Features
 

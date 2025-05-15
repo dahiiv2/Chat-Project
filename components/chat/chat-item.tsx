@@ -1,3 +1,15 @@
+/**
+ * ChatItem Component
+ * 
+ * Renders an individual message in the chat with features including:
+ * - User avatar and name display with role badges
+ * - Message content with timestamp
+ * - File attachments (images, PDFs)
+ * - Edit and delete functionality for authorized users
+ * - Role-based styling and permissions
+ * - Hover effects with gold/amber accents
+ */
+
 import { Member, Message, Profile } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -15,27 +27,41 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 
+/**
+ * Extended type for messages that includes the member who sent it
+ * and their profile information
+ */
 type MessageWithMemberWithProfile = Message & {
     member: Member & {
         profile: Profile;
     };
 };
 
+/**
+ * Props for the ChatItem component
+ */
 interface ChatItemProps {
-    message: MessageWithMemberWithProfile;
-    currentMember: Member;
-    deleted?: boolean;
-    isUpdated?: boolean;
-    socketUrl: string;
-    socketQuery: Record<string, string>;
-    fileUrl?: string;
+    message: MessageWithMemberWithProfile;   // The message with member and profile data
+    currentMember: Member;                  // The current user's member object
+    deleted?: boolean;                      // Whether the message has been deleted
+    isUpdated?: boolean;                    // Whether the message has been edited
+    socketUrl: string;                      // API endpoint for socket operations
+    socketQuery: Record<string, string>;     // Query parameters for socket requests
+    fileUrl?: string;                       // URL to file attachment if present
 }
 
+/**
+ * Zod schema for message edit form validation
+ * Ensures message content has at least 1 character
+ */
 const formSchema = z.object({
     content: z.string().min(1),
 });
 
-// chat item component
+/**
+ * Renders an individual message item with user information, content, 
+ * and appropriate action buttons based on permissions
+ */
 export const ChatItem = ({ 
     message, 
     currentMember,
@@ -45,45 +71,66 @@ export const ChatItem = ({
     socketQuery,
     fileUrl
 }: ChatItemProps) => {
+    // Extract file extension from the file URL if present
     const fileType = fileUrl?.split(".")?.pop();
     const params = useParams();
     const router = useRouter();
     
+    // Component state for editing and deleting operations
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
+    /**
+     * Permission and role checks to determine what actions are allowed
+     */
+    // Check if the message was sent by the current user
     const isCurrentUser = message.member.id === currentMember.id;
+    // Role-based checks for special permissions
     const isAdmin = currentMember.role === "ADMIN";
     const isModerator = currentMember.role === "MODERATOR";
     
-    // Check if we're in a direct message conversation
+    // Check if we're in a direct message conversation vs. a server channel
     const isDirect = socketUrl.includes("/direct-messages");
     const isOwner = currentMember.id === message.member.profileId;
     
     // Users can delete their own messages, admins and moderators can delete any message
     const canDeleteMessage = isAdmin || isModerator || isCurrentUser;
     
+    /**
+     * File type detection for rendering appropriate content
+     */
     const isPDF = fileType === "pdf" && fileUrl;
     const isImage = fileUrl && !isPDF && fileType && ["png", "jpg", "jpeg", "gif"].includes(fileType);
+    
     // Only current user can edit their own messages and only if it's not a file attachment
     const canEditMessage = isCurrentUser && !deleted && !isImage && !isPDF;
     
     // Check if message content is just the file URL to prevent duplicate display
     const isMessageJustFileUrl = fileUrl && message.content === fileUrl;
     
+    /**
+     * Navigates to a direct message conversation with the message author
+     * when their name or avatar is clicked
+     */
     const onMemberClick = () => {
         router.push(`/servers/${params?.serverId}/conversations/${message.member.id}`);
     }
 
+    /**
+     * Handles message deletion with loading state management
+     * Sends DELETE request to the appropriate API endpoint
+     */
     const onDelete = async () => {
         try {
             setIsDeleting(true);
             
+            // Build URL with query parameters for the delete request
             const url = qs.stringifyUrl({
                 url: `${socketUrl}/${message.id}`,
                 query: socketQuery,
             });
 
+            // Send the delete request
             await axios.delete(url);
         } catch (error) {
             console.log(error);
@@ -92,6 +139,10 @@ export const ChatItem = ({
         }
     }
     
+    /**
+     * Form initialization for message editing
+     * Uses react-hook-form with zod validation
+     */
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -99,23 +150,32 @@ export const ChatItem = ({
         }
     });
 
+    // Reset form when message content changes
     useEffect(() => {
         form.reset({
             content: message.content
         });
     }, [message.content]);
     
+    // Track form submission state
     const isLoading = form.formState.isSubmitting;
     
+    /**
+     * Handles form submission for editing a message
+     * Sends PATCH request to update the message content
+     */
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
+            // Build URL with query parameters for the edit request
             const url = qs.stringifyUrl({
                 url: `${socketUrl}/${message.id}`,
                 query: socketQuery,
             });
             
+            // Send the patch request with updated content
             await axios.patch(url, values);
             
+            // Reset form and exit editing mode
             form.reset();
             setIsEditing(false);
         } catch (error) {
@@ -123,6 +183,9 @@ export const ChatItem = ({
         }
     }
     
+    /**
+     * Event listener to exit editing mode when Escape key is pressed
+     */
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === "Escape" && isEditing) {
@@ -135,6 +198,7 @@ export const ChatItem = ({
     }, [isEditing]);
     
     return (
+        // Message container with gold/amber accent on hover
         <div className={cn(
             "group flex gap-x-3 py-4 px-4 transition",
             "dark:hover:bg-zinc-700/10 hover:bg-zinc-200/10",

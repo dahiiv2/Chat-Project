@@ -1,3 +1,9 @@
+/**
+ * CreateServerModal Component
+ * 
+ * Provides a modal interface for creating new servers in the application.
+ * Handles server name and image upload with form validation.
+ */
 "use client";
 
 import * as z from "zod";
@@ -27,6 +33,11 @@ import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
 import { FileUpload } from "@/components/file-upload";
 
+/**
+ * Form validation schema
+ * - Requires a server name
+ * - Requires a server image URL
+ */
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Server name is required."
@@ -36,12 +47,20 @@ const formSchema = z.object({
     })
 });
 
+/**
+ * Modal component for creating a new server
+ */
 export const CreateServerModal = () => {
+    // Access modal state management
     const { isOpen, onClose, type } = useModal();
     const router = useRouter();
 
+    // Only display this modal when createServer type is active
     const isModalOpen = isOpen && type === "createServer";
 
+    /**
+     * Initialize form with validation and default values
+     */
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -50,11 +69,18 @@ export const CreateServerModal = () => {
         }
     });
 
+    // Track form submission state for UI feedback
     const isLoading = form.formState.isSubmitting;
 
+    /**
+     * Handle form submission
+     * Creates a new server via API and handles navigation
+     */
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
+            // Submit server creation request
             await axios.post("/api/servers", values);
+            // Reset form state and close modal
             form.reset();
             router.refresh();
             onClose();
@@ -63,6 +89,9 @@ export const CreateServerModal = () => {
         }
     }
 
+    /**
+     * Reset form when modal is closed
+     */
     const handleClose = () => {
         form.reset();
         onClose();
