@@ -17,12 +17,14 @@ import { db } from "@/lib/db";
  */
 export async function PATCH(
   req: Request,
-  { params }: { params: { userId: string } }
 ) {
+  // Next.js 15 requires extracting params from the URL instead of receiving them as a parameter
+  const url = new URL(req.url);
+  const userId = url.pathname.split("/").pop();
   try {
     // Get the authenticated admin user
     const profile = await currentProfile();
-    const { userId } = params;
+    // userId is already extracted from the URL path
     const { isSuspended } = await req.json();
 
     // Verify the user is authenticated
