@@ -7,7 +7,6 @@
  * - File attachments (images, PDFs)
  * - Edit and delete functionality for authorized users
  * - Role-based styling and permissions
- * - Hover effects with gold/amber accents
  */
 
 import { Member, Message, Profile } from "@prisma/client";
@@ -198,7 +197,6 @@ export const ChatItem = ({
     }, [isEditing]);
     
     return (
-        // Message container with gold/amber accent on hover
         <div className={cn(
             "group flex gap-x-3 py-4 px-4 transition",
             "dark:hover:bg-zinc-700/10 hover:bg-zinc-200/10",

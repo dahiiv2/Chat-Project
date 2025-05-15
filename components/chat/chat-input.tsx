@@ -100,7 +100,6 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
                             <FormItem>
                                 <FormControl>
                                     <div className="relative w-full">
-                                        {/* Message input field with gold/amber accent in focus state */}
                                         <Input
                                             disabled={isLoading}
                                             className="px-4 py-6 pr-24 bg-zinc-200/90 dark:bg-[#000000] border-none border-0 focus-visible:ring-1 focus-visible:ring-amber-500/50 dark:focus-visible:ring-amber-500/30 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"

@@ -23,7 +23,7 @@ const MainLayout = ({
 }: {
     children: React.ReactNode;
 }) => {
-    return ( 
+    return (
         // Main container that takes full height of viewport
         <div className="h-full">
             {/* Navigation sidebar - hidden on mobile, fixed position on desktop */}

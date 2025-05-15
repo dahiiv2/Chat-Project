@@ -101,7 +101,7 @@ export const ChatMessages = ({
     })
 
     /**
-     * Loading state - displays a centered loading spinner with gold/amber accent
+     * Loading state - displays a centered loading spinner
      */
     if (status === "pending") {
         return (
