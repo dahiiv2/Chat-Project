@@ -10,7 +10,7 @@ export default async function InviteCodePage({
   params: any  // Use any type to bypass the strict typing check
 }) {
     const profile = await currentProfile();
-    const { inviteCode } = params;
+    const { inviteCode } = await params;
 
     //Fetch profile
     if (!profile) {
