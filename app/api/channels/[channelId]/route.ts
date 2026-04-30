@@ -29,12 +29,15 @@ import { db } from "@/lib/db";
  */
 export async function DELETE(
     req: Request,
-    { params }: any  // Using 'any' type to bypass strict typing in Next.js 15
+    context: { params: any }  // Using 'any' type to bypass strict typing in Next.js 15
 ) {
     try {
         // Get current authenticated user's profile
         const profile = await currentProfile();
-        
+
+        // Await params before accessing properties (required in Next.js 15+)
+        const params = await context.params;
+
         // Extract query parameters
         const { searchParams } = new URL(req.url);
         const serverId = searchParams.get("serverId");
@@ -128,12 +131,15 @@ export async function DELETE(
  */
 export async function PATCH(
     req: Request,
-    { params }: any  // Using 'any' type to bypass strict typing in Next.js 15
+    context: { params: any }  // Using 'any' type to bypass strict typing in Next.js 15
 ) {
     try {
         // Get current authenticated user's profile
         const profile = await currentProfile();
-        
+
+        // Await params before accessing properties (required in Next.js 15+)
+        const params = await context.params;
+
         // Extract channel update data from request body
         const body = await req.json();
         const { name, type } = body;

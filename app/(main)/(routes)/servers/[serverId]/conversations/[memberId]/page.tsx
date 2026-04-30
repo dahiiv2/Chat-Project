@@ -40,12 +40,15 @@ interface MemberIDPageProps {
  * @param params - Route parameters containing serverId and memberId
  * @param searchParams - Query parameters including video flag for call mode
  */
-const MemberIDPage = async ({ 
+const MemberIDPage = async ({
     params,
     searchParams
 }: MemberIDPageProps) => {
     // Get the current user's profile
     const profile = await currentProfile();
+
+    // Await params before accessing properties (required in Next.js 15+)
+    const { serverId, memberId } = await params;
 
     // Redirect to sign-in if not authenticated
     if (!profile) {
@@ -56,7 +59,7 @@ const MemberIDPage = async ({
     // Include profile data for user information display
     const currentMember = await db.member.findFirst({
         where: {
-            serverId: params.serverId,
+            serverId: serverId,
             profileId: profile.id,
         },
         include: {
@@ -70,7 +73,7 @@ const MemberIDPage = async ({
     }
 
     // Get existing conversation or create a new one between the two members
-    const conversation = await getOrCreateConversation(currentMember.id, params.memberId);
+    const conversation = await getOrCreateConversation(currentMember.id, memberId);
 
     // Redirect if conversation couldn't be created or retrieved
     if (!conversation) {
@@ -105,14 +108,14 @@ const MemberIDPage = async ({
                             ? profile.imageUrl         // Show own image for Personal Notes
                             : otherMember.profile.imageUrl} // Show other user's image
                         name={displayName}            // Personal Notes or user name
-                        serverId={params.serverId}     // Current server ID
+                        serverId={serverId}            // Current server ID
                         type="conversation"          // Header type affects icon and actions
                     />
                 </div>
             </div>
             
             {/* Main content - conditionally show video call or text chat interface */}
-            {searchParams.video ? (
+            {(await searchParams).video ? (
                 // VIDEO CALL MODE - shown when URL has ?video=true parameter
                 // Added by the ChatVideoButton component in the header
                 <div className="flex-1">

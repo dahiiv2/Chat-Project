@@ -28,11 +28,14 @@ interface ServerIDPageProps {
  * 
  * @param params - Route parameters containing serverId
  */
-const ServerIDPage = async ({ 
-    params 
+const ServerIDPage = async ({
+    params
 }: ServerIDPageProps) => {
     // Get the current user's profile for authentication
     const profile = await currentProfile();
+
+    // Await params before accessing properties (required in Next.js 15+)
+    const { serverId } = await params;
 
     // Redirect to sign-in if not authenticated
     if (!profile) {
@@ -41,9 +44,11 @@ const ServerIDPage = async ({
 
     // Fetch server data and verify user is a member of this server
     // Also include the "general" channel which is the default landing channel
-    const server = await db.server.findUnique({
+    // Using findFirst instead of findUnique because relation filters (members: { some: ... })
+    // are not supported by findUnique without relationMode = "prisma"
+    const server = await db.server.findFirst({
         where: {
-            id: params.serverId,
+            id: serverId,
             members: {
                 some: {
                     profileId: profile.id,  // Ensure current user is a member
@@ -71,7 +76,7 @@ const ServerIDPage = async ({
     }
 
     // Redirect to the general channel
-    return redirect(`/servers/${params.serverId}/channels/${initialChannel?.id}`)
+    return redirect(`/servers/${serverId}/channels/${initialChannel?.id}`)
 }
  
 export default ServerIDPage;

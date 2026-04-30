@@ -34,7 +34,9 @@ export default async function ServerIdLayout({
 }) {
     // Get the current user's profile for authentication
     const profile = await currentProfile();
-    const { serverId } = params;
+
+    // Await params before accessing properties (required in Next.js 15+)
+    const { serverId } = await params;
 
     // Redirect to home if user is not authenticated
     if (!profile) {
@@ -44,7 +46,9 @@ export default async function ServerIdLayout({
     // Fetch server data and verify user is a member of this server
     // The query checks both the server ID and that the current user
     // is in the members list of the server
-    const server = await db.server.findUnique({
+    // Using findFirst instead of findUnique because relation filters (members: { some: ... })
+    // are not supported by findUnique without relationMode = "prisma"
+    const server = await db.server.findFirst({
         where: {
             id: serverId,
             members: {

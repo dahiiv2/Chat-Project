@@ -23,11 +23,14 @@ import { NextResponse } from "next/server";
  */
 export async function PATCH(
     req: Request,
-    { params }: any  // Using 'any' type to bypass strict typing in Next.js 15
+    context: { params: any }  // Using 'any' type to bypass strict typing in Next.js 15
 ) {
     try {
         // Get current authenticated user's profile
         const profile = await currentProfile();
+
+        // Await params before accessing properties (required in Next.js 15+)
+        const params = await context.params;
 
         // Verify user is authenticated
         if (!profile) {

@@ -36,11 +36,14 @@ interface ChannelIDPageProps {
  * 
  * @param params - Contains route parameters including serverId and channelId
  */
-const ChannelIDPage = async ({ 
-    params 
+const ChannelIDPage = async ({
+    params
 }: ChannelIDPageProps) => {
     // Get the current user's profile
     const profile = await currentProfile();
+
+    // Await params before accessing properties (required in Next.js 15+)
+    const { serverId, channelId } = await params;
 
     // Redirect to sign-in if not authenticated
     if (!profile) {
@@ -50,7 +53,7 @@ const ChannelIDPage = async ({
     // Fetch the requested channel data
     const channel = await db.channel.findUnique({
         where: {
-            id: params.channelId
+            id: channelId
         }
     });
 
@@ -58,7 +61,7 @@ const ChannelIDPage = async ({
     // Include profile data for rendering user information
     const member = await db.member.findFirst({
         where: {
-            serverId: params.serverId,
+            serverId: serverId,
             profileId: profile.id,
         },
         include: {
@@ -78,10 +81,10 @@ const ChannelIDPage = async ({
             {/* Enhanced header with darker background and shadow - matching conversation page */}
             <div className="bg-zinc-100 dark:bg-[#2B2D31] border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
                 <div className="p-4">
-                    <ChatHeader 
+                    <ChatHeader
                         name={channel.name}
                         channelType={channel.type}
-                        serverId={params.serverId}
+                        serverId={serverId}
                         type="channel"
                     />
                 </div>

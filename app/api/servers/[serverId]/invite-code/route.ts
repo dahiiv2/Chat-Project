@@ -32,9 +32,9 @@ export async function PATCH(
     try {
         // Get current authenticated user's profile
         const profile = await currentProfile();
-        
-        // Extract serverId from route parameters
-        const { serverId } = context.params;
+
+        // Await params before accessing properties (required in Next.js 15+)
+        const { serverId } = await context.params;
 
         // Verify user is authenticated
         if (!profile) {

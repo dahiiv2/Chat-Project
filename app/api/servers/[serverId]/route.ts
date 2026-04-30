@@ -31,9 +31,9 @@ export async function PATCH(
     try {
         // Get current authenticated user's profile
         const profile = await currentProfile();
-        
-        // Extract serverId from route parameters
-        const { serverId } = context.params;
+
+        // Await params before accessing properties (required in Next.js 15+)
+        const { serverId } = await context.params;
         
         // Extract server update data from request body
         const { name, imageUrl } = await req.json();
@@ -83,9 +83,9 @@ export async function DELETE(
     try {
         // Get current authenticated user's profile
         const profile = await currentProfile();
-        
-        // Extract serverId from route parameters
-        const { serverId } = context.params;
+
+        // Await params before accessing properties (required in Next.js 15+)
+        const { serverId } = await context.params;
 
         if (!profile) {
             return new NextResponse("Unauthorized", { status: 401 })
